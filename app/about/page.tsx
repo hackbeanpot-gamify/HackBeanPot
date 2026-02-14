@@ -1,6 +1,7 @@
 "use client";
 
 import { Fredoka, Nunito } from "next/font/google";
+import NextLink from "next/link";
 import {
   Sparkles,
   Target,
@@ -20,6 +21,7 @@ import {
   Flag,
   Gamepad2,
   Globe,
+  Link,
 } from "lucide-react";
 
 /* ─── components ─── */
@@ -281,12 +283,13 @@ export default function AboutPage() {
 
         <ScrollReveal delay={0.35}>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
+            <NextLink
+              href="/dashboard"
               className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-7 py-2.5 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
               style={hFont}
             >
               Grab Your Ticket <ChevronRight className="w-4 h-4 ml-1" />
-            </button>
+            </NextLink>
             <button
               className="inline-flex items-center border border-slate-600 text-slate-300 hover:bg-slate-800 rounded-full px-7 py-2.5 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
               style={hFont}
@@ -683,18 +686,20 @@ export default function AboutPage() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
+            <NextLink
+              href="/dashboard"
               className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-3 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
               style={hFont}
             >
               Start Your First Quest <Sparkles className="w-4 h-4 ml-1.5" />
-            </button>
-            <button
+            </NextLink>
+            <NextLink
+              href="/mission"
               className="inline-flex items-center text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
               style={hFont}
             >
               Learn More
-            </button>
+            </NextLink>
           </div>
         </ScrollReveal>
       </section>
