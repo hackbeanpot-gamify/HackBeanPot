@@ -15,6 +15,7 @@ export interface User {
 // Daily quest / micro-task
 export interface Quest {
   id: string;
+  user_id: string;
   title: string;
   description: string;
   xp_reward: number;
