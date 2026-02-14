@@ -256,8 +256,6 @@ export default function LandingPage() {
           <p className="mt-5 text-slate-400 max-w-md mx-auto text-sm leading-relaxed">Sign up, grab your first quest, and start earning XP today. Every small action levels up your community.</p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
 
-            <NextLink href="/dashboard" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-3 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Start Your First Quest <Sparkles className="w-4 h-4 ml-1.5" /></NextLink>
-
             <NextLink href="/auth/login" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-3 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Start Your First Quest <Sparkles className="w-4 h-4 ml-1.5" /></NextLink>
 
             <NextLink href="/mission" className="inline-flex items-center text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Learn More</NextLink>
