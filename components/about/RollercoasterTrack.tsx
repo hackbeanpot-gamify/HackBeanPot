@@ -1,17 +1,11 @@
 "use client";
 
-interface Checkpoint {
-  y: number;
-  color: string;
-  label: string;
-}
-
 interface RollercoasterTrackProps {
-  checkpoints: Checkpoint[];
+  checkpoints?: { y: number; color: string; label: string }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function RollercoasterTrack({ checkpoints }: RollercoasterTrackProps) {
+export default function RollercoasterTrack(props: RollercoasterTrackProps) {
   const W = 600;
   const H = 4800;
   const RAIL_GAP = 18;

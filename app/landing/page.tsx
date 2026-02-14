@@ -214,7 +214,7 @@ const trackCheckpoints = [
    - Text: slate-50 (headings), slate-400 (body)
    ═══════════════════════════════════════════════════════════ */
 
-export default function AboutPage() {
+export default function LandingPage() {
   return (
     <main
       className={`${fredoka.variable} ${nunito.variable} min-h-screen overflow-x-hidden`}
@@ -268,7 +268,7 @@ export default function AboutPage() {
             className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-none text-slate-50"
             style={hFont}
           >
-            ____Quest
+            Impact Trail
           </h1>
         </ScrollReveal>
 
@@ -573,7 +573,7 @@ export default function AboutPage() {
                   Meet the Builders
                 </h2>
                 <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                  The five devs behind ____Quest — why we built it, in our own words.
+                  The five devs behind Impact Trail — why we built it, in our own words.
                 </p>
                 <div className="space-y-3">
                   {teamQuotes.map((t) => (
