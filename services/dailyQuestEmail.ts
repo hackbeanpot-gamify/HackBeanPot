@@ -7,7 +7,7 @@
 
 import { getTodaysQuestForUser, getQuestUser, getUsersWithPendingQuests } from "@/lib/quests/getTodaysQuest";
 import { buildDailyQuestReminderEmail } from "@/email/templates/dailyQuestReminder";
-import { sendEmail } from "@/email/sendEmail";
+import { sendEmail } from "@/lib/email/sendEmail";
 import { createClient } from "@/lib/supabase/server";
 
 interface SendResult {
@@ -62,7 +62,7 @@ export async function sendDailyQuestEmail(userId: string): Promise<SendResult> {
 
   // 4. Send email
   try {
-    const result = await sendEmail(user.email, payload.subject, payload.text, payload.html);
+    await sendEmail(user.email, payload.subject, payload.text);
 
     // 5. Log success
     await logNotification({
@@ -72,7 +72,7 @@ export async function sendDailyQuestEmail(userId: string): Promise<SendResult> {
       status: "sent",
     });
 
-    return { ok: true, emailId: result.data?.id ?? undefined };
+    return { ok: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
 

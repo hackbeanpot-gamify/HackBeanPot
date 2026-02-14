@@ -44,7 +44,7 @@ RULES:
 - category: MUST be one of: cleanup, volunteer, kindness, environment, community
 - xp_reward: easy=75, medium=200, hard=400
 - estimated_minutes: realistic estimate (15-120)
-- proof_type: one of: photo, checkin, self_report
+- proof_type: one of: photo, checkbox, reflection
 - Return ONLY valid JSON, nothing else.`;
 
     let questAction: { type: "bumped" | "created"; quest: Record<string, unknown> } | null = null;
@@ -58,30 +58,51 @@ RULES:
         const parsed = JSON.parse(cleaned);
 
         if (parsed.match && parsed.questId) {
-          // Match found — bump the weight of the existing quest
-          const { data: matchedQuest } = await supabase
-            .from("dailyQuest")
-            .select("*")
-            .eq("id", parsed.questId)
-            .single();
+          // Match found — use RPC for atomic weight increment to avoid race conditions
+          const { data: result, error: rpcError } = await supabase.rpc('increment_quest_weight', {
+            quest_id: parsed.questId
+          });
 
-          if (matchedQuest) {
-            const newWeight = (matchedQuest.weight || 1) + 1;
-            await supabase
+          if (!rpcError && result) {
+            // If RPC succeeded, fetch the updated quest
+            const { data: updatedQuest } = await supabase
               .from("dailyQuest")
-              .update({ weight: newWeight })
-              .eq("id", parsed.questId);
+              .select("*")
+              .eq("id", parsed.questId)
+              .single();
 
-            questAction = {
-              type: "bumped",
-              quest: { ...matchedQuest, weight: newWeight },
-            };
+            if (updatedQuest) {
+              questAction = {
+                type: "bumped",
+                quest: updatedQuest,
+              };
+            }
+          } else {
+            // Fallback to read-modify-write if RPC doesn't exist (development)
+            const { data: matchedQuest } = await supabase
+              .from("dailyQuest")
+              .select("*")
+              .eq("id", parsed.questId)
+              .single();
+
+            if (matchedQuest) {
+              const newWeight = (matchedQuest.weight || 1) + 1;
+              await supabase
+                .from("dailyQuest")
+                .update({ weight: newWeight })
+                .eq("id", parsed.questId);
+
+              questAction = {
+                type: "bumped",
+                quest: { ...matchedQuest, weight: newWeight },
+              };
+            }
           }
         } else if (!parsed.match && parsed.quest) {
           // No match — create new quest from Gemini's suggestion
           const q = parsed.quest;
-          const validCategories = ["cleanup", "volunteer", "kindness", "environment", "community"];
-          const validProofTypes = ["photo", "checkin", "self_report"];
+          const validCategories = ["cleanup", "volunteer", "kindness", "environment", "community", "social", "civic"];
+          const validProofTypes = ["photo", "checkbox", "reflection"];
 
           if (
             q.title && q.description &&
@@ -96,7 +117,7 @@ RULES:
                 category: q.category,
                 xp_reward: q.xp_reward,
                 estimated_minutes: q.estimated_minutes || 30,
-                proof_type: validProofTypes.includes(q.proof_type) ? q.proof_type : "self_report",
+                proof_type: validProofTypes.includes(q.proof_type) ? q.proof_type : "checkbox",
                 is_daily: true,
                 weight: 1,
                 active: true,

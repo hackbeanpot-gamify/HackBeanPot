@@ -44,7 +44,9 @@ export type QuestCategory =
   | "volunteer"
   | "kindness"
   | "environment"
-  | "community";
+  | "community"
+  | "social"
+  | "civic";
 
 // Quest assignment — maps to "dailyQuestAssignment" table
 export interface DailyQuestAssignment {

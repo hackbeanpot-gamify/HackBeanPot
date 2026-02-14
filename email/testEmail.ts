@@ -14,7 +14,7 @@
  */
 
 import "dotenv/config";
-import { sendEmail } from "./sendEmail";
+import { sendEmail } from "@/lib/email/sendEmail";
 import {
   sendDailyQuestReminder,
   sendStreakWarning,
@@ -81,7 +81,7 @@ async function testBasicSend(): Promise<boolean> {
   logHeader("2. Basic Email Send");
 
   try {
-    const result = await sendEmail(
+    await sendEmail(
       recipient,
       "🎢 Impact Trail — Integration Test",
       [
@@ -93,12 +93,8 @@ async function testBasicSend(): Promise<boolean> {
       ].join("\n")
     );
 
-    if (result.data?.id) {
-      logPass("Email sent", `ID: ${result.data.id}`);
-      return true;
-    }
-    logFail("Send returned unexpected result", JSON.stringify(result));
-    return false;
+    logPass("Email sent successfully");
+    return true;
   } catch (err) {
     logFail("Exception thrown", (err as Error).message);
     return false;
@@ -114,13 +110,8 @@ async function testNotifications(): Promise<boolean> {
 
   // Daily quest reminder
   try {
-    const r = await sendDailyQuestReminder(user);
-    if (r.data?.id) {
-      logPass("Daily Quest Reminder", `ID: ${r.data.id}`);
-    } else {
-      logFail("Daily Quest Reminder", "unknown error");
-      allPassed = false;
-    }
+    await sendDailyQuestReminder(user);
+    logPass("Daily Quest Reminder sent");
   } catch (err) {
     logFail("Daily Quest Reminder", (err as Error).message);
     allPassed = false;
@@ -130,13 +121,8 @@ async function testNotifications(): Promise<boolean> {
 
   // Streak warning
   try {
-    const r = await sendStreakWarning(user, 42);
-    if (r.data?.id) {
-      logPass("Streak Warning (42 days)", `ID: ${r.data.id}`);
-    } else {
-      logFail("Streak Warning", "unknown error");
-      allPassed = false;
-    }
+    await sendStreakWarning(user, 42);
+    logPass("Streak Warning (42 days) sent");
   } catch (err) {
     logFail("Streak Warning", (err as Error).message);
     allPassed = false;
@@ -146,13 +132,8 @@ async function testNotifications(): Promise<boolean> {
 
   // XP milestone
   try {
-    const r = await sendXpMilestone(user, 12, 5000);
-    if (r.data?.id) {
-      logPass("XP Milestone (Level 12)", `ID: ${r.data.id}`);
-    } else {
-      logFail("XP Milestone", "unknown error");
-      allPassed = false;
-    }
+    await sendXpMilestone(user, 12, 5000);
+    logPass("XP Milestone (Level 12) sent");
   } catch (err) {
     logFail("XP Milestone", (err as Error).message);
     allPassed = false;

@@ -4,7 +4,7 @@
  * Each function composes a subject + body and calls sendEmail.
  */
 
-import { sendEmail } from "./sendEmail";
+import { sendEmail } from "@/lib/email/sendEmail";
 
 type User = {
   email: string;
