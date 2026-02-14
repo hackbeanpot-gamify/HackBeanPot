@@ -170,8 +170,11 @@ export default function LandingPage() {
         <ScrollReveal delay={0.25}><p className="mt-6 max-w-lg mx-auto text-base sm:text-lg text-slate-400 leading-relaxed">We turn community issues into <span className="font-semibold text-amber-300">daily quests</span> and volunteering into a <span className="font-semibold text-red-400">multiplayer game</span>.</p></ScrollReveal>
         <ScrollReveal delay={0.35}>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <NextLink href="/dashboard" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-7 py-2.5 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Sign In <ChevronRight className="w-4 h-4 ml-1" /></NextLink>
-            <button className="inline-flex items-center border border-slate-600 text-slate-300 hover:bg-slate-800 rounded-full px-7 py-2.5 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}><Flag className="w-3.5 h-3.5 mr-1.5" /> Report an Issue</button>
+            <NextLink href="/auth/login" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-7 py-2.5 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Sign In <ChevronRight className="w-4 h-4 ml-1" /></NextLink>
+            <button 
+            className="inline-flex items-center border border-slate-600 text-slate-300 hover:bg-slate-800 rounded-full px-7 py-2.5 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" 
+            style={hFont}
+            ><Flag className="w-3.5 h-3.5 mr-1.5" /> Report an Issue</button>
           </div>
         </ScrollReveal>
         <ScrollReveal delay={0.6}>
@@ -251,7 +254,7 @@ export default function LandingPage() {
           <h2 className="text-3xl sm:text-5xl font-extrabold leading-snug max-w-xl mx-auto text-slate-50" style={hFont}>Ready to make your neighborhood <span className="text-amber-400">legendary</span>?</h2>
           <p className="mt-5 text-slate-400 max-w-md mx-auto text-sm leading-relaxed">Sign up, grab your first quest, and start earning XP today. Every small action levels up your community.</p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <NextLink href="/dashboard" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-3 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Start Your First Quest <Sparkles className="w-4 h-4 ml-1.5" /></NextLink>
+            <NextLink href="/auth/login" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-3 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Start Your First Quest <Sparkles className="w-4 h-4 ml-1.5" /></NextLink>
             <NextLink href="/mission" className="inline-flex items-center text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-full px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Learn More</NextLink>
           </div>
         </ScrollReveal>
