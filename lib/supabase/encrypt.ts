@@ -1,8 +1,11 @@
 // lib/auth.ts
 import bcrypt from 'bcryptjs';
-import { createClient } from './client';
+import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient();
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // Hash password before storing
 export async function registerUser(username: string, password: string, firstName: string, lastName: string) {
