@@ -4,6 +4,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Clock, Zap, Camera, CheckCircle } from "lucide-react";
 
+/**
+ * QuestCardDemo — Interactive quest card demo.
+ * Click to cycle: idle → accepted → completed.
+ * Dark carnival theme.
+ */
 interface QuestCardDemoProps {
   title?: string;
   location?: string;
@@ -13,9 +18,9 @@ interface QuestCardDemoProps {
 }
 
 const diffColors: Record<string, string> = {
-  Easy: "text-emerald-500 bg-emerald-50 border-emerald-200",
-  Medium: "text-yellow-600 bg-yellow-50 border-yellow-200",
-  Hard: "text-pink-500 bg-pink-50 border-pink-200",
+  Easy: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+  Medium: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+  Hard: "text-pink-400 bg-pink-400/10 border-pink-400/20",
 };
 
 export default function QuestCardDemo({
@@ -27,6 +32,8 @@ export default function QuestCardDemo({
 }: QuestCardDemoProps) {
   const [state, setState] = useState<"idle" | "accepted" | "completed">("idle");
 
+  if (!title) return null;
+
   function handleClick() {
     if (state === "idle") setState("accepted");
     else if (state === "accepted") setState("completed");
@@ -34,22 +41,25 @@ export default function QuestCardDemo({
   }
 
   const btnColors = {
-    idle: "bg-pink-400 hover:bg-pink-500",
-    accepted: "bg-sky-400 hover:bg-sky-500",
-    completed: "bg-emerald-400 hover:bg-emerald-500",
+    idle: "bg-amber-400 hover:bg-amber-500 text-slate-900",
+    accepted: "bg-orange-400 hover:bg-orange-500 text-slate-900",
+    completed: "bg-emerald-400 hover:bg-emerald-500 text-slate-900",
+  };
+
+  const bannerColors = {
+    idle: "bg-amber-400/80",
+    accepted: "bg-orange-400/80",
+    completed: "bg-emerald-400/80",
   };
 
   return (
     <motion.div
-      className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden"
-      whileHover={{ y: -4 }}
+      className="bg-slate-800/50 border border-amber-400/15 rounded-xl overflow-hidden"
+      whileHover={{ y: -2 }}
       layout
     >
-      {/* banner */}
       <div
-        className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white text-center ${
-          state === "completed" ? "bg-emerald-400" : state === "accepted" ? "bg-sky-400" : "bg-pink-400"
-        }`}
+        className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-900 text-center ${bannerColors[state]}`}
         style={{ fontFamily: "var(--font-fredoka)" }}
       >
         {state === "completed"
@@ -59,9 +69,9 @@ export default function QuestCardDemo({
           : "⚔️ Daily Quest Available"}
       </div>
 
-      <div className="p-5">
+      <div className="p-4">
         <span
-          className={`inline-block text-xs font-bold uppercase tracking-wide rounded-full px-3 py-0.5 mb-3 border ${
+          className={`inline-block text-[9px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 mb-2 border ${
             diffColors[difficulty] || diffColors.Easy
           }`}
         >
@@ -69,47 +79,53 @@ export default function QuestCardDemo({
         </span>
 
         <h3
-          className="font-bold text-gray-800 text-lg leading-snug"
+          className="font-bold text-slate-200 text-sm leading-snug"
           style={{ fontFamily: "var(--font-fredoka)" }}
         >
           {title}
         </h3>
 
-        <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-500 font-medium">
-          <span className="inline-flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-pink-400" /> {location}
+        <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-slate-400 font-medium">
+          <span className="inline-flex items-center gap-0.5">
+            <MapPin className="w-2.5 h-2.5 text-red-400/60" /> {location}
           </span>
-          <span className="inline-flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5 text-sky-400" /> {timeEstimate}
+          <span className="inline-flex items-center gap-0.5">
+            <Clock className="w-2.5 h-2.5 text-orange-400/60" /> {timeEstimate}
           </span>
-          <span className="inline-flex items-center gap-1">
-            <Zap className="w-3.5 h-3.5 text-yellow-400" /> +{xpReward} XP
+          <span className="inline-flex items-center gap-0.5">
+            <Zap className="w-2.5 h-2.5 text-amber-400/60" /> +{xpReward} XP
           </span>
         </div>
 
         <motion.button
           onClick={handleClick}
-          className={`mt-5 w-full py-2.5 rounded-full font-bold text-sm cursor-pointer text-white transition-colors ${btnColors[state]}`}
+          className={`mt-3 w-full py-1.5 rounded-full font-bold text-xs cursor-pointer transition-colors ${btnColors[state]}`}
           style={{ fontFamily: "var(--font-fredoka)" }}
           whileTap={{ scale: 0.95 }}
         >
           <AnimatePresence mode="wait">
             <motion.span
               key={state}
-              className="inline-flex items-center gap-2"
-              initial={{ opacity: 0, y: 8 }}
+              className="inline-flex items-center gap-1"
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.12 }}
             >
               {state === "idle" && (
-                <>Accept Quest <Zap className="w-4 h-4" /></>
+                <>
+                  Accept Quest <Zap className="w-3 h-3" />
+                </>
               )}
               {state === "accepted" && (
-                <>Upload Proof <Camera className="w-4 h-4" /></>
+                <>
+                  Upload Proof <Camera className="w-3 h-3" />
+                </>
               )}
               {state === "completed" && (
-                <>+{xpReward} XP Earned! <CheckCircle className="w-4 h-4" /></>
+                <>
+                  +{xpReward} XP Earned! <CheckCircle className="w-3 h-3" />
+                </>
               )}
             </motion.span>
           </AnimatePresence>
@@ -118,9 +134,9 @@ export default function QuestCardDemo({
         <AnimatePresence>
           {state === "completed" && (
             <motion.div
-              className="mt-3 text-center text-emerald-500 font-extrabold text-xl"
+              className="mt-2 text-center text-amber-400 font-extrabold text-base"
               style={{ fontFamily: "var(--font-fredoka)" }}
-              initial={{ opacity: 0, scale: 0.5, y: 10 }}
+              initial={{ opacity: 0, scale: 0.5, y: 6 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}

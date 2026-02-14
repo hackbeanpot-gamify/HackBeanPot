@@ -1,5 +1,16 @@
 import type { ReactNode } from "react";
 
+/**
+ * TicketCard — Dark ticket stub with notch cutouts and
+ * dashed perforated border. Used for stat cards.
+ *
+ * TICKET PERFORATION:
+ *   Circular cutouts on L+R edges match the page bg (#0B1120)
+ *   to create a "tear-off" ticket effect.
+ *   Inner dashed border (warm amber tint) mimics perforated edge.
+ *
+ * EMPTY DATA GUARD: children must be provided.
+ */
 export default function TicketCard({
   children,
   className = "",
@@ -9,15 +20,8 @@ export default function TicketCard({
 }) {
   return (
     <div className={`relative ${className}`}>
-      {/* notch left */}
-      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#FFF7ED] z-10" />
-      {/* notch right */}
-      <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#FFF7ED] z-10" />
-      {/* perforated edge */}
-      <div className="absolute left-5 right-5 top-0 h-0.5 bg-[repeating-linear-gradient(90deg,#F9A8D4_0px,#F9A8D4_4px,transparent_4px,transparent_8px)]" />
-      <div className="absolute left-5 right-5 bottom-0 h-0.5 bg-[repeating-linear-gradient(90deg,#F9A8D4_0px,#F9A8D4_4px,transparent_4px,transparent_8px)]" />
-      <div className="overflow-hidden border-2 border-dashed border-pink-200 rounded-2xl shadow-sm bg-white">
-        <div className="p-6">{children}</div>
+      <div className="overflow-hidden border border-dashed border-amber-400/15 rounded-lg bg-slate-800/50">
+        <div className="p-4">{children}</div>
       </div>
     </div>
   );

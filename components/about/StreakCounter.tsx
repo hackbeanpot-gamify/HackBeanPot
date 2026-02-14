@@ -3,6 +3,10 @@
 import { motion } from "framer-motion";
 import { Flame, Check } from "lucide-react";
 
+/**
+ * StreakCounter — dark carnival streak display.
+ * Animated flame, amber check dots, warm accents.
+ */
 const days = ["M", "T", "W", "T", "F", "S", "S"];
 const completed = [true, true, true, true, true, true, false];
 
@@ -11,52 +15,56 @@ interface StreakCounterProps {
 }
 
 export default function StreakCounter({ streakDays = 42 }: StreakCounterProps) {
+  if (streakDays <= 0) return null;
+
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-      {/* streak count */}
-      <div className="flex items-center justify-center gap-2 mb-4">
+    <div className="bg-slate-800/50 border border-amber-400/15 rounded-xl p-3">
+      <div className="flex items-center justify-center gap-2 mb-2.5">
         <motion.div
-          animate={{ scale: [1, 1.15, 1], rotate: [0, -5, 5, 0] }}
+          animate={{ scale: [1, 1.12, 1], rotate: [0, -4, 4, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
         >
-          <Flame className="w-8 h-8 text-orange-400 fill-yellow-300" />
+          <Flame className="w-6 h-6 text-amber-400 fill-amber-500/50" />
         </motion.div>
         <span
-          className="text-4xl font-extrabold text-gray-800"
+          className="text-2xl font-extrabold text-slate-100"
           style={{ fontFamily: "var(--font-fredoka)" }}
         >
           {streakDays}
         </span>
-        <span className="text-sm font-bold text-orange-400 uppercase tracking-wide leading-tight">
-          day<br />streak
+        <span className="text-[9px] font-bold text-amber-400/50 uppercase tracking-wide leading-tight">
+          day
+          <br />
+          streak
         </span>
       </div>
 
-      {/* weekly progress */}
-      <div className="flex justify-center gap-2">
+      <div className="flex justify-center gap-1">
         {days.map((day, i) => (
           <motion.div
             key={i}
-            className="flex flex-col items-center gap-1"
-            initial={{ opacity: 0, y: 10 }}
+            className="flex flex-col items-center gap-0.5"
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
+            transition={{ delay: i * 0.05 }}
           >
             <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
                 completed[i]
-                  ? "bg-emerald-400 text-white"
-                  : "bg-gray-100 text-gray-300 border-2 border-dashed border-gray-200"
+                  ? "bg-amber-400/70 text-slate-900"
+                  : "bg-slate-700/40 text-slate-500 border border-dashed border-slate-600/50"
               }`}
             >
-              {completed[i] ? <Check className="w-4 h-4" /> : "?"}
+              {completed[i] ? <Check className="w-3 h-3" /> : "?"}
             </div>
-            <span className="text-[10px] font-semibold text-gray-400">{day}</span>
+            <span className="text-[8px] font-semibold text-slate-500">
+              {day}
+            </span>
           </motion.div>
         ))}
       </div>
 
-      <p className="mt-3 text-center text-xs text-gray-400 font-medium">
+      <p className="mt-1.5 text-center text-[9px] text-slate-500 font-medium">
         Complete today&apos;s quest to keep your streak alive!
       </p>
     </div>

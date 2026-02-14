@@ -2,12 +2,16 @@
 
 import { motion } from "framer-motion";
 
+/**
+ * CircusCharacters — very faint carnival emojis floating along
+ * edges. On dark bg they act like distant fairground lights.
+ */
 interface CircusCharactersProps {
   className?: string;
   characters?: string[];
 }
 
-const defaultCharacters = ["🎈", "🎪", "🍭", "🎡", "🎠", "🍿", "🎟️", "🎀"];
+const defaultCharacters = ["🎡", "🎪", "🎠", "🍿", "🎈", "🎟️"];
 
 export default function CircusCharacters({
   className = "",
@@ -17,20 +21,21 @@ export default function CircusCharacters({
     <div className={`pointer-events-none select-none ${className}`} aria-hidden>
       {characters.map((char, i) => {
         const isLeft = i % 2 === 0;
-        const topPercent = 8 + (i * 80) / characters.length;
+        const topPercent = 10 + (i * 75) / characters.length;
         return (
           <motion.span
             key={i}
-            className="absolute text-xl sm:text-2xl opacity-15"
+            className="absolute text-lg"
             style={{
               top: `${topPercent}%`,
-              [isLeft ? "left" : "right"]: `${3 + (i % 3) * 3}%`,
+              [isLeft ? "left" : "right"]: `${4 + (i % 3) * 4}%`,
+              opacity: 0.06,
             }}
-            animate={{ y: [0, -6, 0], rotate: [0, isLeft ? 4 : -4, 0] }}
+            animate={{ y: [0, -4, 0] }}
             transition={{
-              duration: 5 + (i % 3),
+              duration: 6 + (i % 3),
               repeat: Infinity,
-              delay: i * 0.5,
+              delay: i * 0.7,
               ease: "easeInOut",
             }}
           >
