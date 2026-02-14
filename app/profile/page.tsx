@@ -1,3 +1,250 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Fredoka, Nunito } from "next/font/google";
+import { createClient } from "@/lib/supabase/client";
+
+const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", weight: ["400", "500", "600", "700"] });
+const nunito = Nunito({ subsets: ["latin"], variable: "--font-nunito", weight: ["400", "500", "600", "700", "800"] });
+const hFont = { fontFamily: "var(--font-fredoka)" } as const;
+
+interface Profile {
+  id: string;
+  username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  city: string | null;
+  xp: number;
+  level: number;
+  currentStreak: number;
+  longestStreak: number;
+  streakLastDate: string | null;
+  createdAt: string;
+}
+
+function xpForLevel(l: number) { return 250 * l * (l - 1); }
+
+function useProfile(userId: string) {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const sb = createClient();
+        const { data, error: e } = await sb.from("profiles").select("*").eq("id", userId).single();
+        if (e) throw e;
+        setProfile(data);
+      } catch (e: any) { setError(e.message || "Failed to load"); }
+      setLoading(false);
+    })();
+  }, [userId]);
+  return { profile, loading, error };
+}
+
 export default function ProfilePage() {
-  return <></>;
+  // Change this UUID to show a different user
+  const DEMO_USER_ID = "21972c6e-f716-46ed-81b6-e37ff8adcdae";
+
+  const { profile, loading, error } = useProfile(DEMO_USER_ID);
+
+  if (loading) return (
+    <div className={`${fredoka.variable} ${nunito.variable} min-h-screen flex items-center justify-center`} style={{ backgroundColor: "#0B1120" }}>
+      <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "#f59e0b", borderTopColor: "transparent" }} />
+    </div>
+  );
+
+  if (error || !profile) return (
+    <div className={`${fredoka.variable} ${nunito.variable} min-h-screen flex items-center justify-center`} style={{ backgroundColor: "#0B1120" }}>
+      <div className="rounded-xl p-8 text-center max-w-sm" style={{ backgroundColor: "rgba(15,23,42,0.9)", border: "1px solid rgba(232,75,92,0.4)" }}>
+        <span className="text-4xl block mb-3">😔</span>
+        <span className="text-sm" style={{ color: "#e84b5c" }}>{error || "Profile not found"}</span>
+      </div>
+    </div>
+  );
+
+  const curXp = xpForLevel(profile.level);
+  const nxtXp = xpForLevel(profile.level + 1);
+  const inLvl = profile.xp - curXp;
+  const needed = nxtXp - curXp;
+  const pct = Math.min(Math.max((inLvl / needed) * 100, 0), 100);
+
+  return (
+    <div className={`${fredoka.variable} ${nunito.variable} min-h-screen flex flex-col items-center justify-center px-4`}
+      style={{ fontFamily: "var(--font-nunito)", background: "linear-gradient(180deg, #080E1A 0%, #0B1120 40%, #0E1528 100%)" }}>
+
+      {/* Ambient glow */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, rgba(245,158,11,0.06) 0%, transparent 70%)" }} />
+
+      {/* Title */}
+      <h1 className="relative text-4xl md:text-5xl font-extrabold mb-8 tracking-tight uppercase"
+        style={{ ...hFont, color: "#e84b5c", textShadow: "0 0 30px rgba(232,75,92,0.3), 0 2px 0 rgba(0,0,0,0.3)" }}>
+        Your Profile
+      </h1>
+
+      {/* ═══ CONSOLE BODY ═══ */}
+      <div className="relative w-full max-w-[750px]" style={{
+        background: "linear-gradient(145deg, #1a1a2e 0%, #16162a 50%, #121228 100%)",
+        borderRadius: "24px 24px 40px 40px",
+        border: "3px solid rgba(255,255,255,0.08)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(245,158,11,0.05)",
+        padding: "28px",
+      }}>
+        {/* Top highlight */}
+        <div className="absolute top-0 left-[10%] right-[10%] h-[2px]"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)" }} />
+
+        <div className="flex items-center gap-5">
+
+          {/* ═══ LEFT: Action Buttons ═══ */}
+          <div className="flex flex-col items-center gap-3 flex-shrink-0 w-[60px]">
+            {[
+              { c: "#e84b5c" },
+              { c: "#3b82f6" },
+              { c: "#f6c453" },
+              { c: "#ff8a3d" },
+            ].map((b, i) => (
+              <div key={i} style={{
+                width: 22, height: 22, borderRadius: "50%",
+                backgroundColor: b.c,
+                boxShadow: `0 0 10px ${b.c}66, inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.2)`,
+                border: "1px solid rgba(0,0,0,0.2)",
+              }} />
+            ))}
+          </div>
+
+          {/* ═══ CENTER: Screen ═══ */}
+          <div className="flex-1 relative" style={{
+            background: "linear-gradient(180deg, #0a0f1e 0%, #0d1325 100%)",
+            borderRadius: "12px",
+            border: "3px solid rgba(255,255,255,0.06)",
+            padding: "24px",
+            boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.2)",
+            minHeight: "300px",
+          }}>
+            {/* Scanlines */}
+            <div className="absolute inset-0 pointer-events-none rounded-[9px]" style={{
+              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)"
+            }} />
+
+            {/* Screen content */}
+            <div className="relative flex gap-5">
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                <div style={{
+                  width: 80, height: 80, borderRadius: "8px",
+                  border: "2px solid #f59e0b", overflow: "hidden",
+                  boxShadow: "0 0 15px rgba(245,158,11,0.2)",
+                }}>
+                  {profile.avatarUrl ? (
+                    <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-2xl font-bold"
+                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
+                      {(profile.displayName || profile.username || "?").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Profile info */}
+              <div className="flex-1 min-w-0">
+                {/* Display Name */}
+                <div className="mb-4">
+                  <span className="text-[10px] uppercase tracking-[0.15em] block mb-1" style={{ color: "rgba(148,163,184,0.5)" }}>Display Name</span>
+                  <span className="text-xl font-bold block truncate" style={{ color: "rgb(248 250 252)", ...hFont }}>
+                    {profile.displayName || profile.username}
+                  </span>
+                  <span className="text-xs block mt-0.5" style={{ color: "rgba(148,163,184,0.6)" }}>
+                    @{profile.username}{profile.city && ` · 📍 ${profile.city}`}
+                  </span>
+                </div>
+
+                {/* XP Level */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] uppercase tracking-[0.15em]" style={{ color: "rgba(148,163,184,0.5)" }}>XP Level</span>
+                    <span className="text-xs font-bold" style={{ color: "#f59e0b", ...hFont }}>LVL {profile.level}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,158,11,0.12)" }}>
+                      <div className="h-full rounded-full transition-all duration-1000"
+                        style={{ width: `${pct}%`, background: "linear-gradient(90deg, #f59e0b, #f6c453)", boxShadow: "0 0 8px rgba(245,158,11,0.4)" }} />
+                    </div>
+                    <span className="text-[10px] font-mono flex-shrink-0" style={{ color: "rgba(245,158,11,0.6)" }}>
+                      {profile.xp || 0.toLocaleString()} XP
+                    </span>
+                  </div>
+                </div>
+
+                {/* Streaks */}
+                <div className="flex gap-4">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-[0.15em] block mb-1" style={{ color: "rgba(148,163,184,0.5)" }}>Current Streak</span>
+                    <div className="flex items-center gap-1.5">
+                      <span>🔥</span>
+                      <span className="text-lg font-bold" style={{ color: "#e84b5c" }}>{profile.currentStreak}</span>
+                      <span className="text-xs" style={{ color: "rgba(232,75,92,0.6)" }}>day{profile.currentStreak !== 1 ? "s" : ""}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase tracking-[0.15em] block mb-1" style={{ color: "rgba(148,163,184,0.5)" }}>Longest Streak</span>
+                    <div className="flex items-center gap-1.5">
+                      <span>🏆</span>
+                      <span className="text-lg font-bold" style={{ color: "#f6c453" }}>{profile.longestStreak}</span>
+                      <span className="text-xs" style={{ color: "rgba(246,196,83,0.6)" }}>day{profile.longestStreak !== 1 ? "s" : ""}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Screen bottom bar */}
+            <div className="mt-5 pt-3 flex items-center justify-between" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(148,163,184,0.3)" }}>⚔️ Quest v1.0</span>
+              <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(148,163,184,0.3)" }}>
+                Member since {new Date(profile.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+              </span>
+            </div>
+          </div>
+
+          {/* ═══ RIGHT: D-Pad ═══ */}
+          <div className="flex-shrink-0 w-[60px] flex items-center justify-center">
+            <div className="relative" style={{ width: 60, height: 60 }}>
+              <div className="absolute top-1/2 left-0 -translate-y-1/2" style={{
+                width: 60, height: 20, backgroundColor: "#e84b5c", borderRadius: "4px",
+                boxShadow: "0 0 12px rgba(232,75,92,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)",
+              }} />
+              <div className="absolute left-1/2 top-0 -translate-x-1/2" style={{
+                width: 20, height: 60, backgroundColor: "#e84b5c", borderRadius: "4px",
+                boxShadow: "0 0 12px rgba(232,75,92,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)",
+              }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "rgba(0,0,0,0.3)" }} />
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ Console bottom ═══ */}
+        <div className="flex items-center justify-between mt-6 px-4">
+          <div className="flex items-center gap-2">
+            <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.5)" }} />
+            <span className="text-[9px] uppercase tracking-[0.15em] font-semibold" style={{ color: "rgba(255,255,255,0.2)" }}>Power</span>
+          </div>
+          <span className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: "rgba(245,158,11,0.4)", ...hFont }}>_Quest</span>
+          <div className="flex gap-[3px]">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} style={{ width: 2, height: 14, borderRadius: "1px", backgroundColor: "rgba(255,255,255,0.06)" }} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Reflection */}
+      <div className="w-full max-w-[600px] h-[60px] mt-[-1px]"
+        style={{ background: "radial-gradient(ellipse at center top, rgba(245,158,11,0.04) 0%, transparent 70%)" }} />
+    </div>
+  );
 }
