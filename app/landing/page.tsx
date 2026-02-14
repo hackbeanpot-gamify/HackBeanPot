@@ -214,7 +214,7 @@ const trackCheckpoints = [
    - Text: slate-50 (headings), slate-400 (body)
    ═══════════════════════════════════════════════════════════ */
 
-export default function AboutPage() {
+export default function LandingPage() {
   return (
     <main
       className={`${fredoka.variable} ${nunito.variable} min-h-screen overflow-x-hidden`}

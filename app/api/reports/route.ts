@@ -14,4 +14,3 @@ if (error) {
   
   return NextResponse.json({ reports: data });
 }
-
