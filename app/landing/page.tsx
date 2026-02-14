@@ -48,7 +48,7 @@ function Cart({ title, items, accent, borderColor, rotation, emoji }: {
 }) {
   return (
     <div className="relative transition-transform duration-500 hover:scale-105" style={{ transform: `rotate(${rotation})` }}>
-      <div className="rounded-2xl px-6 py-5 w-[260px] relative overflow-hidden"
+      <div className="rounded-2xl px-6 py-5 w-[350px] relative overflow-hidden"
         style={{ backgroundColor: "rgba(15,23,42,0.95)", border: `2px solid ${borderColor}`, boxShadow: `0 12px 40px rgba(0,0,0,0.4), 0 0 25px ${borderColor}15` }}>
         <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none" style={{ background: `linear-gradient(180deg, ${borderColor}08 0%, transparent 100%)` }} />
         <div className="relative">
@@ -166,11 +166,11 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% -10%, rgba(245,158,11,0.07) 0%, transparent 55%)" }} />
         <ScrollReveal><HeroBadge><PartyPopper className="w-3.5 h-3.5 mr-1.5" /> Now in beta</HeroBadge></ScrollReveal>
         <ScrollReveal delay={0.1}><p className="text-[11px] font-bold tracking-[0.35em] uppercase text-amber-400/40 mb-3" style={hFont}>🎪 All Aboard! 🎪</p></ScrollReveal>
-        <ScrollReveal delay={0.15}><h1 className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-none text-slate-50" style={hFont}>Impact Trail</h1></ScrollReveal>
+        <ScrollReveal delay={0.15}><h1 className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-none text-slate-50" style={hFont}>Impact Quest</h1></ScrollReveal>
         <ScrollReveal delay={0.25}><p className="mt-6 max-w-lg mx-auto text-base sm:text-lg text-slate-400 leading-relaxed">We turn community issues into <span className="font-semibold text-amber-300">daily quests</span> and volunteering into a <span className="font-semibold text-red-400">multiplayer game</span>.</p></ScrollReveal>
         <ScrollReveal delay={0.35}>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <NextLink href="/dashboard" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-7 py-2.5 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Grab Your Ticket <ChevronRight className="w-4 h-4 ml-1" /></NextLink>
+            <NextLink href="/dashboard" className="inline-flex items-center bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-7 py-2.5 text-sm font-bold shadow-lg shadow-amber-400/15 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}>Sign In <ChevronRight className="w-4 h-4 ml-1" /></NextLink>
             <button className="inline-flex items-center border border-slate-600 text-slate-300 hover:bg-slate-800 rounded-full px-7 py-2.5 text-sm font-bold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-95" style={hFont}><Flag className="w-3.5 h-3.5 mr-1.5" /> Report an Issue</button>
           </div>
         </ScrollReveal>
