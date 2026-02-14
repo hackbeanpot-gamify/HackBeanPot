@@ -152,7 +152,7 @@ export async function POST(request: Request) {
     }
 
     // Generate quests using Gemini AI
-    const prompt = `You are a community engagement AI for QuestBoard, an app that gamifies civic participation in ${userCity}.
+    const prompt = `You are a community engagement AI for Impact Trail, an app that gamifies civic participation in ${userCity}.
 
 TASK: Analyze the following community reports and generate 3-5 daily micro-quests for a user to address these issues.
 
