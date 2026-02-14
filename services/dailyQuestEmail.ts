@@ -6,7 +6,7 @@
  */
 
 import { getTodaysQuestForUser, getQuestUser, getUsersWithPendingQuests } from "@/lib/quests/getTodaysQuest";
-import { buildDailyQuestEmail } from "@/email/templates/dailyQuestReminder";
+import { buildDailyQuestReminderEmail } from "@/email/templates/dailyQuestReminder";
 import { sendEmail } from "@/email/sendEmail";
 import { createClient } from "@/lib/supabase/server";
 
@@ -58,7 +58,7 @@ export async function sendDailyQuestEmail(userId: string): Promise<SendResult> {
 
   // 3. Build email
   const { quest } = questResult;
-  const payload = buildDailyQuestEmail(quest, user);
+  const payload = buildDailyQuestReminderEmail(quest, user.display_name || user.email);
 
   // 4. Send email
   try {
