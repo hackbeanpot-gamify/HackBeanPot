@@ -37,6 +37,7 @@ QuestBoard gamifies community service by connecting local people, helping organi
 | **Backend / Database** | Supabase (PostgreSQL + APIs) — `@supabase/supabase-js` |
 | **Authentication** | Supabase Auth / OAuth (Google login) — `@supabase/ssr` |
 | **AI / NLP** | Gemini API — `@google/generative-ai` (LLM processing for community concerns + sentiment analysis) |
+| **Notifications** | Twilio — `twilio` (SMS notifications for quest reminders, streak alerts, event announcements) |
 | **UI Utilities** | `class-variance-authority`, `clsx`, `tailwind-merge` (required by ShadCN UI) |
 | **Deployment** | Vercel (primary), AWS (optional / secondary) |
 | **Testing / Dev Tools** | Thunder Client, Docker (optional) |
@@ -93,8 +94,10 @@ hackbeanpot_app/
 │       │       └── route.ts      # POST — AI-generated quests from community reports
 │       ├── reports/
 │       │   └── route.ts          # GET + POST — community reports CRUD
-│       └── leaderboard/
-│           └── route.ts          # GET — city-wide leaderboard data
+│       ├── leaderboard/
+│       │   └── route.ts          # GET — city-wide leaderboard data
+│       └── notifications/
+│           └── route.ts          # POST — send SMS notifications via Twilio
 │
 ├── components/                   # Reusable React components
 │   ├── ui/                       # ShadCN UI primitives (button, card, input, etc.)
@@ -107,6 +110,7 @@ hackbeanpot_app/
 ├── lib/                          # Shared utilities & client configs
 │   ├── utils.ts                  # cn() helper for Tailwind class merging
 │   ├── gemini.ts                 # Gemini AI client config
+│   ├── twilio.ts                 # Twilio SMS client config
 │   └── supabase/
 │       ├── client.ts             # Supabase browser client
 │       ├── server.ts             # Supabase server client (App Router)
