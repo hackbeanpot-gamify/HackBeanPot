@@ -160,8 +160,8 @@ export default function ReportsPage() {
                 <div
                   className="absolute top-1/2 left-0 -translate-y-1/2"
                   style={{
-                    width: 70,
-                    height: 24,
+                    width: 62,
+                    height: 25,
                     backgroundColor: "#e84b5c",
                     borderRadius: "5px",
                     boxShadow:
@@ -171,8 +171,8 @@ export default function ReportsPage() {
                 <div
                   className="absolute left-1/2 top-0 -translate-x-1/2"
                   style={{
-                    width: 24,
-                    height: 70,
+                    width: 25,
+                    height: 62,
                     backgroundColor: "#e84b5c",
                     borderRadius: "5px",
                     boxShadow:
