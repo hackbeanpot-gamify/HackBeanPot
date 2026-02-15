@@ -14,11 +14,12 @@ interface Profile {
   id: string; email?: string | null; username?: string | null;
   display_name?: string | null; displayName?: string | null;
   avatarUrl?: string | null; avatar_url?: string | null;
-  city?: string | null; xp?: number | null; level?: number | null;
-  currentStreak?: number | null; current_streak?: number | null;
-  longestStreak?: number | null; longest_streak?: number | null;
-  createdAt?: string | null; created_at?: string | null;
- 
+  city?: string | null;
+  xp_total?: number | null;
+  level?: number | null;
+  streak_current?: number | null;
+  streak_longest?: number | null;
+  created_at?: string | null;
 }
 
 // Safe getters that handle both camelCase and snake_case
@@ -29,26 +30,26 @@ function getAvatar(p: Profile): string | null {
   return p.avatarUrl || p.avatar_url || null;
 }
 function getXp(p: Profile): number {
-  return p.xp || 0;
+  return p.xp_total || 0;
 }
 function getLevel(p: Profile): number {
   return p.level || 1;
 }
 function getCurrentStreak(p: Profile): number {
-  return p.currentStreak || p.current_streak || 0;
+  return p.streak_current || 0;
 }
 function getLongestStreak(p: Profile): number {
-  return p.longestStreak || p.longest_streak || 0;
+  return p.streak_longest || 0;
 }
 function getCreatedAt(p: Profile): string {
-  return p.createdAt || p.created_at || new Date().toISOString();
+  return p.created_at || new Date().toISOString();
 }
 
 function xpForLevel(l: number) { return 250 * l * (l - 1); }
 
 
 
-function useProfile(userId: string) {
+function useProfile(userId?: string) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,9 +58,43 @@ function useProfile(userId: string) {
       setLoading(true);
       try {
         const sb = createClient();
-        const { data, error: e } = await sb.from("profiles").select("*").eq("id", userId).single();
-        if (e) throw e;
-        setProfile(data);
+        let profileData;
+
+        if (userId) {
+          // Fetch specific user by ID
+          const result = await sb.from("profiles").select("*").eq("id", userId).single();
+          if (result.error) throw result.error;
+          profileData = result.data;
+        } else {
+          // Fetch user from database by index (0 = first, 1 = second, 2 = third, etc.)
+          const userIndex = 2; // Change this number to get different users
+          const result = await sb.from("profiles").select("*").order("created_at", { ascending: true }).limit(userIndex + 1);
+          if (result.error) throw result.error;
+          if (!result.data || result.data.length < userIndex + 1) throw new Error(`Less than ${userIndex + 1} users in database`);
+          profileData = result.data[userIndex];
+        }
+
+        // Fetch user stats for XP, level, and streaks
+        const { data: statsData, error: statsError } = await sb
+          .from("user_stats")
+          .select("xp_total, level, streak_current, streak_best")
+          .eq("user_id", profileData.id)
+          .single();
+
+        console.log("Profile ID:", profileData.id);
+        console.log("Stats Data:", statsData);
+        console.log("Stats Error:", statsError);
+
+        // Merge profile and stats data
+        const mergedData: Profile = {
+          ...profileData,
+          xp_total: statsData?.xp_total ?? 0,
+          level: statsData?.level ?? 1,
+          streak_current: statsData?.streak_current ?? 0,
+          streak_longest: (statsData as any)?.streak_best ?? 0,
+        };
+
+        setProfile(mergedData);
       } catch (e: any) { setError(e.message || "Failed to load"); }
       setLoading(false);
     })();
@@ -68,10 +103,8 @@ function useProfile(userId: string) {
 }
 
 export default function ProfilePage() {
-  // Change this UUID to show a different user
-  const DEMO_USER_ID = "21972c6e-f716-46ed-81b6-e37ff8adcdae";
-
-  const { profile, loading, error } = useProfile(DEMO_USER_ID);
+  // Fetch specific user by ID
+  const { profile, loading, error } = useProfile("57d33940-2603-474d-b084-285aaf859a0e");
 
   if (loading) return (
     <div className={`${fredoka.variable} ${nunito.variable} min-h-screen flex items-center justify-center`} style={{ backgroundColor: "#0B1120" }}>
@@ -213,8 +246,8 @@ export default function ProfilePage() {
                     <span className="text-[10px] uppercase tracking-[0.15em] block mb-1" style={{ color: "rgba(148,163,184,0.5)" }}>Current Streak</span>
                     <div className="flex items-center gap-1.5">
                       <span>🔥</span>
-                      <span className="text-lg font-bold" style={{ color: "#e84b5c" }}>{profile.currentStreak}</span>
-                      <span className="text-xs" style={{ color: "rgba(232,75,92,0.6)" }}>day{profile.currentStreak !== 1 ? "s" : ""}</span>
+                      <span className="text-lg font-bold" style={{ color: "#e84b5c" }}>{profile.streak_current}</span>
+                      <span className="text-xs" style={{ color: "rgba(232,75,92,0.6)" }}>day{profile.streak_current !== 1 ? "s" : ""}</span>
                     </div>
                   </div>
                   <div>

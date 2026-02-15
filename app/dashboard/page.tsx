@@ -188,9 +188,9 @@ export default function DashboardPage(): React.JSX.Element {
   const { quests, loading: questsLoading } = useQuests();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const name = "Quester";
-  const xp = 0;
-  const streak = 0;
+  const name = "Jackson Zheng";
+  const xp = 510;
+  const streak = 2;
 
   const currentColors = TENT_COLORS[activeIndex];
   const goLeft = useCallback(() => setActiveIndex((p) => (p === 0 ? TOTAL_TENTS - 1 : p - 1)), []);
