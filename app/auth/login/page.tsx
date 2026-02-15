@@ -270,9 +270,9 @@ export default function AuthPage() {
     setError(null);
     setLoading(true);
 
-    // Hardcoded: always redirect to dashboard
+    // Hardcoded: always redirect to profile
     setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/profile");
     }, 500);
   };
 
