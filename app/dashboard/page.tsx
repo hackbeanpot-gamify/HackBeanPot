@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Fredoka, Nunito } from "next/font/google";
 import { useQuests } from "@/lib/hooks/useQuests";
+import { useAssignedQuests } from "@/lib/hooks/useAssignedQuests";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import type { LeaderboardEntry } from "@/types";
 import ArcadeNavbar from "@/components/ArcadeNavbar";
@@ -79,12 +80,12 @@ function ArcadeArrow({ direction, onClick, color }: { direction: "left" | "right
 /* ── Tent ── */
 function Tent({ color, lightColor, darkColor, glowColor, title, children }: TentProps): React.JSX.Element {
   return (
-    <div className="flex flex-col items-center w-full max-w-[600px] mx-auto" style={{ filter: `drop-shadow(0 10px 40px ${glowColor})` }}>
-      <div className="relative z-10 -mb-10">
-        <div style={{ width: 7, height: 70, backgroundColor: darkColor, margin: "0 auto" }} />
-        <div style={{ width: 42, height: 32, backgroundColor: color, clipPath: "polygon(0 0, 100% 30%, 0 100%)", position: "absolute", top: 2, left: 9, filter: `drop-shadow(0 4px 10px ${glowColor})` }} />
+    <div className="flex flex-col items-center w-full max-w-[510px] mx-auto" style={{ filter: `drop-shadow(0 10px 40px ${glowColor})` }}>
+      <div className="relative z-10 -mb-8">
+        <div style={{ width: 6, height: 60, backgroundColor: darkColor, margin: "0 auto" }} />
+        <div style={{ width: 36, height: 27, backgroundColor: color, clipPath: "polygon(0 0, 100% 30%, 0 100%)", position: "absolute", top: 2, left: 8, filter: `drop-shadow(0 4px 10px ${glowColor})` }} />
       </div>
-      <div className="w-full relative" style={{ height: 190 }}>
+      <div className="w-full relative" style={{ height: 162 }}>
         <div className="absolute inset-0" style={{ clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)", background: `linear-gradient(135deg, ${lightColor} 0%, ${color} 40%, ${darkColor} 100%)` }} />
         <div className="absolute inset-0" style={{ clipPath: "polygon(50% 0%, 58% 100%, 42% 100%)", backgroundColor: darkColor, opacity: 0.5 }} />
         <div className="absolute inset-0" style={{ clipPath: "polygon(50% 0%, 30% 100%, 18% 100%)", backgroundColor: darkColor, opacity: 0.3 }} />
@@ -98,17 +99,17 @@ function Tent({ color, lightColor, darkColor, glowColor, title, children }: Tent
         </div>
       </div>
       <div className="w-[92%] relative" style={{ marginTop: 2 }}>
-        <div className="absolute -left-2 top-0 bottom-0 w-7 rounded-bl-2xl overflow-hidden z-10">
-          <div className="h-full" style={{ background: `repeating-linear-gradient(180deg, ${color} 0px, ${color} 16px, ${darkColor} 16px, ${darkColor} 32px)`, opacity: 0.7 }} />
+        <div className="absolute -left-2 top-0 bottom-0 w-6 rounded-bl-2xl overflow-hidden z-10">
+          <div className="h-full" style={{ background: `repeating-linear-gradient(180deg, ${color} 0px, ${color} 14px, ${darkColor} 14px, ${darkColor} 28px)`, opacity: 0.7 }} />
         </div>
-        <div className="absolute -right-2 top-0 bottom-0 w-7 rounded-br-2xl overflow-hidden z-10">
-          <div className="h-full" style={{ background: `repeating-linear-gradient(180deg, ${color} 0px, ${color} 16px, ${darkColor} 16px, ${darkColor} 32px)`, opacity: 0.7 }} />
+        <div className="absolute -right-2 top-0 bottom-0 w-6 rounded-br-2xl overflow-hidden z-10">
+          <div className="h-full" style={{ background: `repeating-linear-gradient(180deg, ${color} 0px, ${color} 14px, ${darkColor} 14px, ${darkColor} 28px)`, opacity: 0.7 }} />
         </div>
         <div className="relative rounded-b-2xl overflow-hidden" style={{ backgroundColor: "#0f172a", border: `3px solid ${color}40`, boxShadow: "0 25px 60px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.1)" }}>
-          <div className="px-7 py-3 text-center" style={{ background: `linear-gradient(180deg, ${color}28 0%, ${color}12 100%)`, borderBottom: `2px solid ${color}35` }}>
-            <h3 className="text-lg font-bold uppercase tracking-[0.15em]" style={{ color, ...hFont }}>{title}</h3>
+          <div className="px-6 py-3 text-center" style={{ background: `linear-gradient(180deg, ${color}28 0%, ${color}12 100%)`, borderBottom: `2px solid ${color}35` }}>
+            <h3 className="text-base font-bold uppercase tracking-[0.15em]" style={{ color, ...hFont }}>{title}</h3>
           </div>
-          <div className="px-7 py-6 min-h-[220px]">{children}</div>
+          <div className="px-6 py-5 min-h-[187px]">{children}</div>
         </div>
       </div>
     </div>
@@ -185,7 +186,12 @@ function BossQuestCard({ quest }: { quest: DashboardQuest }): React.JSX.Element 
    ═══════════════════════════════════════════ */
 export default function DashboardPage(): React.JSX.Element {
   const { data: leaderboard, loading: leaderboardLoading } = useLeaderboard();
-  const { quests, loading: questsLoading } = useQuests();
+  const { quests: allQuests, loading: allQuestsLoading } = useQuests();
+
+  // Use the same user ID as the profile page
+  const userId = "57d33940-2603-474d-b084-285aaf859a0e";
+  const { quests: assignedQuests, loading: assignedQuestsLoading } = useAssignedQuests(userId);
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const name = "Jackson Zheng";
@@ -205,7 +211,7 @@ export default function DashboardPage(): React.JSX.Element {
     return () => window.removeEventListener("keydown", onKey);
   }, [goLeft, goRight]);
 
-  const bossQuests = quests.filter((q) => !q.is_daily);
+  const bossQuests = allQuests.filter((q) => !q.is_daily);
 
   return (
     <main className={`${fredoka.variable} ${nunito.variable} min-h-screen`}
@@ -216,7 +222,7 @@ export default function DashboardPage(): React.JSX.Element {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[700px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse at center, rgba(245,158,11,0.05) 0%, transparent 70%)" }} />
 
-      <div className="relative text-center pt-12 pb-2 px-4">
+      <div className="relative text-center pt-20 pb-2 px-4">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold" style={{ ...hFont, color: "rgb(248 250 252)", textShadow: "0 0 40px rgba(245,158,11,0.15)" }}>
           Dashboard
         </h1>
@@ -229,7 +235,7 @@ export default function DashboardPage(): React.JSX.Element {
         <div className="flex items-center justify-center gap-6 md:gap-8">
           <ArcadeArrow direction="left" onClick={goLeft} color={currentColors.color} />
 
-          <div className="relative w-full max-w-[600px] overflow-hidden" style={{ minHeight: 500 }}>
+          <div className="relative w-full max-w-[510px] overflow-hidden" style={{ minHeight: 425 }}>
             <div className="transition-all duration-500 ease-in-out" key={activeIndex} style={{ animation: "tentFadeIn 0.4s ease-out" }}>
 
               {activeIndex === 0 && (
@@ -266,18 +272,38 @@ export default function DashboardPage(): React.JSX.Element {
 
               {activeIndex === 2 && (
                 <Tent {...TENT_COLORS[2]} title="Quests">
-                  {questsLoading || quests.length === 0 ? (
+                  {assignedQuestsLoading ? (
                     <div className="text-center py-12 text-base text-slate-500">Loading quests...</div>
+                  ) : assignedQuests.length === 0 ? (
+                    <div className="text-center py-12 text-base text-slate-500">No quests assigned today</div>
                   ) : (
                     <div className="space-y-3">
-                      {quests.filter((q) => q.is_daily).slice(0, 4).map((q) => (
-                        <div key={q.id} className="flex items-center justify-between py-4 px-5 rounded-xl transition-all duration-200 hover:scale-105"
+                      {assignedQuests.slice(0, 4).map((q) => (
+                        <div key={q.id} className="rounded-xl transition-all duration-200"
                           style={{ backgroundColor: "rgba(59,130,246,0.08)", border: "2px solid rgba(59,130,246,0.2)", boxShadow: "0 3px 10px rgba(59,130,246,0.15)" }}>
-                          <span className="text-base font-medium text-slate-300 truncate max-w-[350px]">{q.title}</span>
-                          <span className="text-sm font-bold shrink-0 px-4 py-2 rounded-full"
-                            style={{ backgroundColor: "rgba(59,130,246,0.15)", color: "#60a5fa", border: "1.5px solid rgba(59,130,246,0.25)" }}>
-                            +{q.xp_reward} XP
-                          </span>
+                          <div className="flex items-center justify-between py-4 px-5">
+                            <span className="text-base font-medium text-slate-300 truncate max-w-[280px]">{q.title}</span>
+                            <span className="text-sm font-bold shrink-0 px-4 py-2 rounded-full"
+                              style={{ backgroundColor: "rgba(59,130,246,0.15)", color: "#60a5fa", border: "1.5px solid rgba(59,130,246,0.25)" }}>
+                              +{q.xp_reward} XP
+                            </span>
+                          </div>
+                          <div className="px-5 pb-4">
+                            <button
+                              onClick={() => {
+                                // TODO: Add task completion link/handler here
+                                console.log("Task completed for quest:", q.id);
+                              }}
+                              className="w-full py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95"
+                              style={{
+                                background: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)",
+                                color: "#ffffff",
+                                border: "2px solid rgba(96,165,250,0.4)",
+                                boxShadow: "0 4px 15px rgba(59,130,246,0.3), inset 0 1px 0 rgba(255,255,255,0.2)"
+                              }}>
+                              ✓ Task Completed
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -287,7 +313,7 @@ export default function DashboardPage(): React.JSX.Element {
 
               {activeIndex === 3 && (
                 <Tent {...TENT_COLORS[3]} title="Boss Quests">
-                  {questsLoading || bossQuests.length === 0 ? (
+                  {allQuestsLoading || bossQuests.length === 0 ? (
                     <div className="text-center py-12 text-base text-slate-500">No boss quests available</div>
                   ) : (
                     <div className="space-y-3">
