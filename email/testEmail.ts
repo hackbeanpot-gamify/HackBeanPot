@@ -81,17 +81,17 @@ async function testBasicSend(): Promise<boolean> {
   logHeader("2. Basic Email Send");
 
   try {
-    await sendEmail(
-      recipient,
-      "🎢 Impact Trail — Integration Test",
-      [
+    await sendEmail({
+      to: recipient,
+      subject: "🎢 Impact Trail — Integration Test",
+      text: [
         "Hey! This is a test email from Impact Trail.",
         "",
         "If you're reading this, the Resend integration is working correctly.",
         "",
         "— The Impact Trail Team 🎪",
       ].join("\n")
-    );
+    });
 
     logPass("Email sent successfully");
     return true;

@@ -54,27 +54,27 @@ function Cart({ title, items, accent, borderColor, rotation, emoji }: {
 }) {
   return (
     <div className="relative transition-transform duration-500 hover:scale-105" style={{ transform: `rotate(${rotation})` }}>
-      <div className="rounded-2xl px-6 py-5 w-[350px] relative overflow-hidden"
-        style={{ backgroundColor: "rgba(15,23,42,0.95)", border: `2px solid ${borderColor}`, boxShadow: `0 12px 40px rgba(0,0,0,0.4), 0 0 25px ${borderColor}15` }}>
-        <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none" style={{ background: `linear-gradient(180deg, ${borderColor}08 0%, transparent 100%)` }} />
+      <div className="rounded-2xl px-8 py-7 w-[420px] relative overflow-hidden"
+        style={{ backgroundColor: "rgba(15,23,42,0.95)", border: `3px solid ${borderColor}`, boxShadow: `0 16px 48px rgba(0,0,0,0.5), 0 0 30px ${borderColor}20` }}>
+        <div className="absolute top-0 left-0 right-0 h-20 pointer-events-none" style={{ background: `linear-gradient(180deg, ${borderColor}10 0%, transparent 100%)` }} />
         <div className="relative">
-          <div className="flex items-center gap-2 mb-3">
-            <span style={{ fontSize: "1.2rem" }}>{emoji}</span>
-            <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: accent, ...hFont }}>{title}</h3>
+          <div className="flex items-center gap-3 mb-5">
+            <span style={{ fontSize: "1.5rem" }}>{emoji}</span>
+            <h3 className="text-base font-bold uppercase tracking-wider" style={{ color: accent, ...hFont }}>{title}</h3>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {items.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-[13px] text-slate-300 leading-relaxed">
-                <span className="mt-0.5 flex-shrink-0" style={{ color: accent }}>→</span><span>{item}</span>
+              <li key={i} className="flex items-start gap-3 text-[14px] text-slate-300 leading-relaxed">
+                <span className="mt-0.5 flex-shrink-0" style={{ color: accent, fontSize: "1.1rem" }}>→</span><span>{item}</span>
               </li>
             ))}
           </ul>
         </div>
       </div>
-      <div className="flex justify-center gap-20 -mt-[2px]">
+      <div className="flex justify-center gap-24 -mt-[2px]">
         {[0, 1].map(w => (
-          <div key={w} style={{ width: 22, height: 22, borderRadius: "50%", border: `2.5px solid ${accent}`, backgroundColor: "rgba(15,23,42,0.95)", boxShadow: `0 0 10px ${borderColor}33` }}>
-            <div className="absolute" style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: accent, margin: "5px auto", left: "50%", transform: "translateX(-50%)" }} />
+          <div key={w} style={{ width: 24, height: 24, borderRadius: "50%", border: `3px solid ${accent}`, backgroundColor: "rgba(15,23,42,0.95)", boxShadow: `0 0 12px ${borderColor}40` }}>
+            <div className="absolute" style={{ width: 9, height: 9, borderRadius: "50%", backgroundColor: accent, margin: "5.5px auto", left: "50%", transform: "translateX(-50%)" }} />
           </div>
         ))}
       </div>
@@ -225,16 +225,16 @@ export default function LandingPage() {
       </section>
 
       {/* Carts */}
-      <section className="relative pb-24 overflow-hidden">
+      <section className="relative py-32 overflow-hidden">
         {/* Background track continuation */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1400 600" preserveAspectRatio="none" fill="none">
           <path d="M-50 50 C200 200, 400 -50, 700 150 S1100 350, 1450 100" stroke="#d4a574" strokeWidth="3" opacity="0.15" />
           <path d="M-50 65 C200 215, 400 -35, 700 165 S1100 365, 1450 115" stroke="#d4a574" strokeWidth="3" opacity="0.1" />
         </svg>
 
-        <div className="relative max-w-6xl mx-auto px-6">
+        <div className="relative max-w-7xl mx-auto px-6">
           <ScrollReveal delay={0.1}>
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-10">
               <Cart title="What We Do?" emoji="🎯" accent="#f59e0b" borderColor="rgba(245,158,11,0.4)" rotation="-3deg"
                 items={["Connect local people", "Find volunteers to complete daily quests", "Build stronger communities"]} />
               <Cart title="How We Do It?" emoji="⚙️" accent="#ff8a3d" borderColor="rgba(255,138,61,0.4)" rotation="1.5deg"
