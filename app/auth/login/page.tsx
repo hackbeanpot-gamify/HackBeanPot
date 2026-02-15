@@ -272,7 +272,7 @@ export default function AuthPage() {
 
     // Hardcoded: always redirect to profile
     setTimeout(() => {
-      router.push("/profile");
+      router.push("/dashboard");
     }, 500);
   };
 
