@@ -91,7 +91,7 @@ export function useAssignedQuests(userId: string): UseAssignedQuestsReturn {
         }));
 
       console.log("[useAssignedQuests] Extracted quests:", assignedQuests);
-      setQuests(assignedQuests);
+      setQuests(assignedQuests as any);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to fetch assigned quests";
       setError(message);
@@ -105,5 +105,5 @@ export function useAssignedQuests(userId: string): UseAssignedQuestsReturn {
     fetchQuests();
   }, [fetchQuests]);
 
-  return { quests, loading, error, refetch: fetchQuests };
+  return { quests: quests as any, loading, error, refetch: fetchQuests };
 }

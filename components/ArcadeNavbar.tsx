@@ -32,13 +32,6 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   {
-    href: "/landing",
-    label: "Home",
-    icon: <Home className="w-4 h-4" />,
-    color: "#f59e0b",
-    glowColor: "rgba(245,158,11,0.3)",
-  },
-  {
     href: "/dashboard",
     label: "Dashboard",
     icon: <Sparkles className="w-4 h-4" />,
@@ -99,7 +92,7 @@ export default function ArcadeNavbar() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo - Arcade style */}
-            <NextLink href="/dashboard" className="flex items-center gap-3 group">
+            <NextLink href="/profile" className="flex items-center gap-3 group">
               <div className="relative">
                 {/* Arcade coin */}
                 <div
@@ -132,7 +125,7 @@ export default function ArcadeNavbar() {
                     textShadow: "0 0 20px rgba(245,158,11,0.2)",
                   }}
                 >
-                  Impact Quest
+                  Impact Trail
                 </span>
                 <div className="flex items-center gap-1 mt-[-2px]">
                   {[0, 1, 2, 3, 4].map((i) => (

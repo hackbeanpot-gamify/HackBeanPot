@@ -56,19 +56,19 @@ export default function ReportsPage() {
       />
 
       {/* Header */}
-      <div className="relative text-center pt-32 pb-8 px-4">
-        <div className="inline-flex items-center gap-2 mb-4">
-          <Flag className="w-5 h-5" style={{ color: "#e84b5c" }} />
+      <div className="relative text-center pt-20 pb-6 px-4">
+        <div className="inline-flex items-center gap-2 mb-3">
+          <Flag className="w-4 h-4" style={{ color: "#e84b5c" }} />
           <p
-            className="text-[11px] font-bold tracking-[0.3em] uppercase"
+            className="text-[10px] font-bold tracking-[0.3em] uppercase"
             style={{ color: "rgba(232,75,92,0.5)", ...hFont }}
           >
             Report Issues
           </p>
-          <Flag className="w-5 h-5" style={{ color: "#e84b5c" }} />
+          <Flag className="w-4 h-4" style={{ color: "#e84b5c" }} />
         </div>
         <h1
-          className="text-5xl sm:text-6xl md:text-7xl font-extrabold"
+          className="text-3xl sm:text-4xl md:text-5xl font-extrabold"
           style={{
             ...hFont,
             color: "rgb(248 250 252)",
@@ -77,18 +77,13 @@ export default function ReportsPage() {
         >
           Report a Problem
         </h1>
-        <p className="mt-4 max-w-2xl mx-auto text-base text-slate-400 leading-relaxed">
-          See something that needs fixing in your community? Tell us about it!
-          <br />
-          <span className="text-amber-300 font-semibold">
-            We'll turn it into a quest
-          </span>{" "}
-          for volunteers to tackle.
+        <p className="mt-3 max-w-2xl mx-auto text-sm text-slate-400 leading-relaxed">
+          See something that needs fixing? <span className="text-amber-300 font-semibold">We'll turn it into a quest</span> for volunteers to tackle.
         </p>
       </div>
 
       {/* Main Console */}
-      <div className="relative max-w-4xl mx-auto px-4 pb-20">
+      <div className="relative max-w-4xl mx-auto px-4 pb-12">
         <div
           className="relative"
           style={{
@@ -98,11 +93,11 @@ export default function ReportsPage() {
             border: "3px solid rgba(232,75,92,0.2)",
             boxShadow:
               "0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(232,75,92,0.08), inset 0 1px 0 rgba(255,255,255,0.05)",
-            padding: "36px",
+            padding: "24px",
           }}
         >
           {/* Console header */}
-          <div className="flex items-center gap-7 mb-8">
+          <div className="flex items-center gap-7 mb-5">
             {/* Left: Power buttons */}
             <div className="flex flex-col items-center gap-3 flex-shrink-0 w-[60px]">
               {[
@@ -199,10 +194,10 @@ export default function ReportsPage() {
               background: "linear-gradient(180deg, #0a0f1e 0%, #0d1325 100%)",
               borderRadius: "12px",
               border: "3px solid rgba(255,255,255,0.06)",
-              padding: "28px",
+              padding: "20px",
               boxShadow:
                 "inset 0 2px 10px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.2)",
-              minHeight: "400px",
+              minHeight: "320px",
             }}
           >
             {/* Scanlines */}
@@ -217,10 +212,10 @@ export default function ReportsPage() {
             {/* Content */}
             <div className="relative">
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label
-                    className="block text-xs uppercase tracking-[0.15em] mb-3 font-bold"
+                    className="block text-xs uppercase tracking-[0.15em] mb-2 font-bold"
                     style={{ color: "#e84b5c", ...hFont }}
                   >
                     What's the problem?
@@ -234,7 +229,7 @@ export default function ReportsPage() {
                       backgroundColor: "rgba(15,23,42,0.8)",
                       border: "2px solid rgba(232,75,92,0.2)",
                       color: "#e2e8f0",
-                      minHeight: "140px",
+                      minHeight: "100px",
                       fontFamily: "var(--font-nunito)",
                     }}
                     disabled={loading}
@@ -417,7 +412,7 @@ export default function ReportsPage() {
 
               {/* Info footer */}
               <div
-                className="mt-8 pt-4 text-center"
+                className="mt-5 pt-3 text-center"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <p
@@ -431,7 +426,7 @@ export default function ReportsPage() {
           </div>
 
           {/* Console footer */}
-          <div className="flex items-center justify-between mt-6 px-4">
+          <div className="flex items-center justify-between mt-4 px-4">
             <div className="flex items-center gap-2">
               <div
                 style={{
