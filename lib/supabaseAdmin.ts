@@ -10,7 +10,7 @@
  *
  * AUTH:
  * Uses NEXT_PUBLIC_SUPABASE_ANON_KEY. The RLS policies on the
- * relevant tables (dailyQuestAssignment, users_profile, dailyQuest)
+ * relevant tables (dailyQuestAssignment, profiles, dailyQuest)
  * include service-level policies that allow inserts/updates
  * without an authenticated user context.
  *

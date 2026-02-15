@@ -238,11 +238,11 @@ export default function ProfilePage() {
           <div className="flex-shrink-0 w-[60px] flex items-center justify-center">
             <div className="relative" style={{ width: 60, height: 60 }}>
               <div className="absolute top-1/2 left-0 -translate-y-1/2" style={{
-                width: 70, height: 24, backgroundColor: "#e84b5c", borderRadius: "5px",
+                width: 60, height: 20, backgroundColor: "#e84b5c", borderRadius: "5px",
                 boxShadow: "0 0 16px rgba(232,75,92,0.35), inset 0 -3px 5px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.1)",
               }} />
               <div className="absolute left-1/2 top-0 -translate-x-1/2" style={{
-                width: 24, height: 70, backgroundColor: "#e84b5c", borderRadius: "5px",
+                width: 25, height: 60, backgroundColor: "#e84b5c", borderRadius: "5px",
                 boxShadow: "0 0 16px rgba(232,75,92,0.35), inset 0 -3px 5px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.1)",
               }} />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"

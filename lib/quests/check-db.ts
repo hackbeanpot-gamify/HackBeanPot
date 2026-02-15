@@ -54,7 +54,7 @@ async function main() {
   const tests: Array<[string, () => PromiseLike<any>]> = [
     ["dailyQuest (all)", () => supabase.from("dailyQuest").select("*").limit(5)],
     ["dailyQuest (active daily)", () => supabase.from("dailyQuest").select("id, title, xp_reward, estimated_minutes, proof_type, weight").eq("is_daily", true).eq("active", true).limit(5)],
-    ["users_profile (all)", () => supabase.from("users_profile").select("id, email, display_name").limit(5)],
+    ["profiles (all)", () => supabase.from("profiles").select("id, email, display_name").limit(5)],
     ["user_stats (all)", () => supabase.from("user_stats").select("user_id, xp_total, level, streak_current").limit(5)],
     ["dailyQuestAssignment (all)", () => supabase.from("dailyQuestAssignment").select("*").limit(5)],
     ["dailyQuestAssignment JOIN dailyQuest", () => supabase.from("dailyQuestAssignment").select("*, dailyQuest(*)").limit(3)],
