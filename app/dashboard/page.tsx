@@ -253,19 +253,11 @@ export default function DashboardPage(): React.JSX.Element {
       <div className="fixed top-1/2 right-1/4 w-[350px] h-[350px] pointer-events-none opacity-40"
         style={{ background: "radial-gradient(circle, rgba(96,165,250,0.06) 0%, transparent 70%)", filter: "blur(40px)" }} />
 
-      <div className="relative text-center pt-16 pb-8 px-4">
-        <p className="text-xl md:text-2xl font-medium mb-2" style={{
+      <div className="relative text-center pt-24 pb-8 px-4">
+        <p className="text-2xl md:text-3xl font-medium" style={{
           ...hFont,
           color: "#f1f5f9",
-          textShadow: "0 2px 10px rgba(0,0,0,0.4)"
-        }}>
-          Hey <span className="font-bold" style={{
-            color: "#fbbf24",
-            textShadow: "0 0 20px rgba(251,191,36,0.4)"
-          }}>{name}</span>!
-        </p>
-        <p className="text-sm md:text-base" style={{
-          color: "#94a3b8",
+          textShadow: "0 2px 10px rgba(0,0,0,0.4)",
           letterSpacing: "0.02em"
         }}>
           Spin the carousel to explore
