@@ -501,6 +501,7 @@ export default function DashboardPage() {
           to { opacity: 1; transform: scale(1) translateY(0); }
         }
       `}</style>
+      <div></div>
     </main>
   );
 }
