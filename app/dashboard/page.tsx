@@ -190,13 +190,38 @@ export default function DashboardPage(): React.JSX.Element {
 
   // Use the same user ID as the profile page
   const userId = "57d33940-2603-474d-b084-285aaf859a0e";
-  const { quests: assignedQuests, loading: assignedQuestsLoading } = useAssignedQuests(userId);
+  const { quests: assignedQuests, loading: assignedQuestsLoading, refetch } = useAssignedQuests(userId);
 
   const [activeIndex, setActiveIndex] = useState(0);
 
   const name = "Jackson Zheng";
   const xp = 510;
   const streak = 2;
+
+  const handleCompleteQuest = async (assignmentId: string) => {
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error } = await supabase
+        .from("dailyQuestAssignment")
+        .update({
+          status: "completed",
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", assignmentId);
+
+      if (error) {
+        console.error("Failed to complete quest:", error);
+        return;
+      }
+
+      // Refetch quests to update the UI
+      refetch();
+    } catch (err) {
+      console.error("Error completing quest:", err);
+    }
+  };
 
   const currentColors = TENT_COLORS[activeIndex];
   const goLeft = useCallback(() => setActiveIndex((p) => (p === 0 ? TOTAL_TENTS - 1 : p - 1)), []);
@@ -278,30 +303,28 @@ export default function DashboardPage(): React.JSX.Element {
                     <div className="text-center py-12 text-base text-slate-500">No quests assigned today</div>
                   ) : (
                     <div className="space-y-3">
-                      {assignedQuests.slice(0, 4).map((q) => (
-                        <div key={q.id} className="rounded-xl transition-all duration-200"
+                      {assignedQuests.slice(0, 4).map((item) => (
+                        <div key={item.quest.id} className="rounded-xl transition-all duration-200"
                           style={{ backgroundColor: "rgba(59,130,246,0.08)", border: "2px solid rgba(59,130,246,0.2)", boxShadow: "0 3px 10px rgba(59,130,246,0.15)" }}>
                           <div className="flex items-center justify-between py-4 px-5">
-                            <span className="text-base font-medium text-slate-300 truncate max-w-[280px]">{q.title}</span>
+                            <span className="text-base font-medium text-slate-300 truncate max-w-[280px]">{item.quest.title}</span>
                             <span className="text-sm font-bold shrink-0 px-4 py-2 rounded-full"
                               style={{ backgroundColor: "rgba(59,130,246,0.15)", color: "#60a5fa", border: "1.5px solid rgba(59,130,246,0.25)" }}>
-                              +{q.xp_reward} XP
+                              +{item.quest.xp_reward} XP
                             </span>
                           </div>
                           <div className="px-5 pb-4">
                             <button
-                              onClick={() => {
-                                // TODO: Add task completion link/handler here
-                                console.log("Task completed for quest:", q.id);
-                              }}
-                              className="w-full py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95"
+                              onClick={() => handleCompleteQuest(item.assignmentId)}
+                              disabled={item.status === "completed"}
+                              className="w-full py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                               style={{
                                 background: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)",
                                 color: "#ffffff",
                                 border: "2px solid rgba(96,165,250,0.4)",
                                 boxShadow: "0 4px 15px rgba(59,130,246,0.3), inset 0 1px 0 rgba(255,255,255,0.2)"
                               }}>
-                              ✓ Task Completed
+                              {item.status === "completed" ? "✓ " : ""}Task Completed
                             </button>
                           </div>
                         </div>

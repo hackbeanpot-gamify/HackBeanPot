@@ -10,9 +10,15 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { DailyQuest } from "@/types";
 
+interface AssignedQuestWithStatus {
+  quest: DailyQuest;
+  status: "assigned" | "completed" | "expired";
+  assignmentId: string;
+}
+
 interface UseAssignedQuestsReturn {
-  /** Array of assigned quests for the user */
-  quests: DailyQuest[];
+  /** Array of assigned quests with their status */
+  quests: AssignedQuestWithStatus[];
   /** True while fetching quests from the database, false otherwise */
   loading: boolean;
   /** Error message if fetch failed, null if successful */
@@ -75,10 +81,14 @@ export function useAssignedQuests(userId: string): UseAssignedQuestsReturn {
 
       if (queryError) throw queryError;
 
-      // Extract the quest data from the joined results
+      // Extract the quest data with assignment status from the joined results
       const assignedQuests = (data || [])
-        .map((assignment: any) => assignment.dailyQuest)
-        .filter((quest: any) => quest !== null) as DailyQuest[];
+        .filter((assignment: any) => assignment.dailyQuest !== null)
+        .map((assignment: any) => ({
+          quest: assignment.dailyQuest as DailyQuest,
+          status: assignment.status as "assigned" | "completed" | "expired",
+          assignmentId: assignment.id
+        }));
 
       console.log("[useAssignedQuests] Extracted quests:", assignedQuests);
       setQuests(assignedQuests);
