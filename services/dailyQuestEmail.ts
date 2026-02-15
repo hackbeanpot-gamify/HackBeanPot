@@ -6,36 +6,12 @@
  */
 
 import { getTodaysQuestForUser, getQuestUser, getUsersWithPendingQuests } from "@/lib/quests/getTodaysQuest";
-import { buildDailyQuestReminderEmail } from "@/email/templates/dailyQuestReminder";
+import { buildDailyQuestEmail } from "@/lib/email/buildDailyQuestEmail";
 import { sendEmail } from "@/lib/email/sendEmail";
-import { createClient } from "@/lib/supabase/server";
 
 interface SendResult {
   ok: boolean;
   reason?: string;
-  emailId?: string;
-}
-
-/**
- * Log a notification attempt to the database.
- */
-async function logNotification(entry: {
-  user_id: string;
-  quest_id: string | null;
-  type: string;
-  status: "sent" | "failed";
-  error?: string;
-}) {
-  try {
-    const supabase = await createClient();
-    await supabase.from("notification_logs").insert({
-      ...entry,
-      sent_at: new Date().toISOString(),
-    });
-  } catch (err) {
-    // Don't throw on log failure — it's non-critical
-    console.error("[logNotification] Failed to log:", err);
-  }
 }
 
 /**
@@ -58,33 +34,16 @@ export async function sendDailyQuestEmail(userId: string): Promise<SendResult> {
 
   // 3. Build email
   const { quest } = questResult;
-  const payload = buildDailyQuestReminderEmail(quest, user.display_name || user.email);
+  const { subject, text, html } = buildDailyQuestEmail(quest, user.display_name || user.email);
 
   // 4. Send email
   try {
-    await sendEmail(user.email, payload.subject, payload.text);
-
-    // 5. Log success
-    await logNotification({
-      user_id: userId,
-      quest_id: String(quest.id),
-      type: "daily_quest_reminder",
-      status: "sent",
-    });
+    await sendEmail({ to: user.email, subject, text, html });
 
     return { ok: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-
-    // 5. Log failure
-    await logNotification({
-      user_id: userId,
-      quest_id: String(quest.id),
-      type: "daily_quest_reminder",
-      status: "failed",
-      error: message,
-    });
-
+    console.error(`[sendDailyQuestEmail] Failed for user=${userId}:`, message);
     return { ok: false, reason: message };
   }
 }

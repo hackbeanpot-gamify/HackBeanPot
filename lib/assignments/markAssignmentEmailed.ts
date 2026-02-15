@@ -1,20 +1,20 @@
 /**
  * lib/assignments/markAssignmentEmailed.ts
  *
- * Sets `emailed_at` on an assignment after a successful email send.
+ * Sets emailed_at = now() on an assignment row.
  *
  * WHY THIS EXISTS:
- * Makes the job idempotent. If the job re-runs, assignments with
- * emailed_at != null are skipped. Email send and DB update are
- * separate concerns — this only runs after a confirmed send.
+ * Called ONLY after a successful email send. This makes the job
+ * idempotent — re-running the job skips assignments where
+ * emailed_at is already set.
  *
  * TABLE: public.dailyQuestAssignment
  */
 
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
 
 /**
- * Mark an assignment as emailed by setting emailed_at = now().
+ * Mark an assignment as emailed by setting emailed_at to now().
  *
  * @param assignmentId - UUID of the assignment row.
  * @throws Error if the update fails.
@@ -22,7 +22,9 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 export async function markAssignmentEmailed(
   assignmentId: string
 ): Promise<void> {
-  const { error } = await supabaseAdmin
+  const supabase = getSupabaseAdminClient();
+
+  const { error } = await supabase
     .from("dailyQuestAssignment")
     .update({ emailed_at: new Date().toISOString() })
     .eq("id", assignmentId);

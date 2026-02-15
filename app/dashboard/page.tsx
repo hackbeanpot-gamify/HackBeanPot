@@ -47,6 +47,11 @@ function ArcadeArrow({ direction, onClick, color }: { direction: "left" | "right
     </button>
   );
 }
+function useBossQuests(n = 4) {
+  const [q, setQ] = useState<Quest[]>([]);
+  useEffect(() => { (async () => { const sb = createClient(); const { data } = await sb.from("quests").select("*").eq("isDaily", false).limit(n); if (data) setQ(data); })(); }, [n]);
+  return q;
+}
 
 /* ═══════════════════════════════════════════
    TENT COMPONENT
@@ -157,21 +162,21 @@ function MiniConsole({ entries }: { entries: LeaderboardEntry[] }) {
     <div className="rounded-xl overflow-hidden" style={{
       background: "linear-gradient(145deg, #1a1a2e, #121228)",
       border: "2px solid rgba(246,196,83,0.25)",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.4), 0 0 15px rgba(246,196,83,0.05)",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
     }}>
-      <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: "1px solid rgba(246,196,83,0.1)" }}>
-        <div className="flex gap-1.5">
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: "1px solid rgba(246,196,83,0.1)" }}>
+        <div className="flex gap-2">
           {["#e84b5c", "#f6c453", "#22c55e"].map((c, i) => (
-            <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: c, boxShadow: `0 0 4px ${c}66` }} />
+            <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: c, boxShadow: `0 0 6px ${c}66` }} />
           ))}
         </div>
-        <span className="text-[7px] font-bold uppercase tracking-widest" style={{ color: "rgba(246,196,83,0.4)", ...hFont }}>Rankings</span>
+        <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(246,196,83,0.4)", ...hFont }}>Rankings</span>
       </div>
-      <div className="px-3 py-2.5" style={{ background: "rgba(8,12,26,0.9)" }}>
+      <div className="px-4 py-3" style={{ background: "rgba(8,12,26,0.9)" }}>
         {entries.length === 0 ? (
-          <div className="text-center py-3 text-[10px]" style={{ color: "rgba(148,163,184,0.3)" }}>No data yet</div>
+          <div className="text-center py-4 text-xs" style={{ color: "rgba(148,163,184,0.3)" }}>No data yet</div>
         ) : (
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {entries.slice(0, 5).map((e, i) => {
               const name = e.display_name || "User";
               return (
@@ -186,6 +191,74 @@ function MiniConsole({ entries }: { entries: LeaderboardEntry[] }) {
             })}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   CAROUSEL ARROW
+   ═══════════════════════════════════════════ */
+function CarouselArrow({ direction, onClick, color }: { direction: "left" | "right"; onClick: () => void; color: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+      style={{
+        width: 56, height: 56, borderRadius: "50%",
+        backgroundColor: "rgba(15,23,42,0.8)",
+        border: `2px solid ${color}40`,
+        boxShadow: `0 0 20px ${color}15`,
+        cursor: "pointer",
+      }}
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        {direction === "left" ? <polyline points="15 18 9 12 15 6" /> : <polyline points="9 6 15 12 9 18" />}
+      </svg>
+    </button>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   BOSS QUEST CARD
+   ═══════════════════════════════════════════ */
+function BossQuestCard({ quest }: { quest: Quest }) {
+  const xpR = quest.xpReward || quest.xp_reward || 0;
+  const diff = quest.difficulty || "hard";
+  return (
+    <div className="relative rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02]"
+      style={{
+        backgroundColor: "rgba(34,197,94,0.04)",
+        border: "1px solid rgba(34,197,94,0.2)",
+        boxShadow: "0 0 12px rgba(34,197,94,0.05)",
+      }}>
+      {/* Glow bar at top */}
+      <div className="h-1" style={{
+        background: "linear-gradient(90deg, #22c55e, #4ade80, #22c55e)",
+        boxShadow: "0 0 10px rgba(34,197,94,0.4)",
+      }} />
+      <div className="px-4 py-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <span className="text-sm font-bold text-slate-200 block truncate">{quest.title}</span>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full"
+                style={{
+                  backgroundColor: "rgba(34,197,94,0.12)",
+                  color: "#4ade80",
+                  border: "1px solid rgba(34,197,94,0.2)",
+                }}>
+                🔥 {diff}
+              </span>
+              <span className="text-[9px]" style={{ color: "rgba(148,163,184,0.4)" }}>•</span>
+              <span className="text-[9px] font-bold" style={{ color: "rgba(34,197,94,0.5)" }}>RAID EVENT</span>
+            </div>
+          </div>
+          <div className="flex flex-col items-center flex-shrink-0">
+            <span className="text-lg font-bold" style={{ color: "#4ade80", ...hFont }}>+{xpR}</span>
+            <span className="text-[8px] font-bold uppercase" style={{ color: "rgba(34,197,94,0.5)" }}>XP</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -233,6 +306,21 @@ export default function DashboardPage() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
 
+  const TOTAL_TENTS = 4;
+
+  const tentColors = [
+    { color: "#e84b5c", lightColor: "#f47182", darkColor: "#b83a4a", glowColor: "rgba(232,75,92,0.2)" },
+    { color: "#f6c453", lightColor: "#fad97a", darkColor: "#c99a2e", glowColor: "rgba(246,196,83,0.2)" },
+    { color: "#3b82f6", lightColor: "#60a5fa", darkColor: "#2563eb", glowColor: "rgba(59,130,246,0.2)" },
+    { color: "#22c55e", lightColor: "#4ade80", darkColor: "#16a34a", glowColor: "rgba(34,197,94,0.25)" },
+  ];
+
+  const tentNames = ["Profile Stats", "Leaderboard", "Quests", "Boss Quests"];
+  const currentColors = tentColors[activeIndex];
+
+  const goLeft = () => setActiveIndex((prev) => (prev === 0 ? TOTAL_TENTS - 1 : prev - 1));
+  const goRight = () => setActiveIndex((prev) => (prev === TOTAL_TENTS - 1 ? 0 : prev + 1));
+
   return (
     <main className={`${fredoka.variable} ${nunito.variable} min-h-screen`}
       style={{ fontFamily: "var(--font-nunito)", background: "linear-gradient(180deg, #080E1A 0%, #0B1120 40%, #0E1528 100%)" }}>
@@ -248,8 +336,7 @@ export default function DashboardPage() {
           🎪 Welcome to the Carnival 🎪
         </p>
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold" style={{
-          ...hFont, color: "rgb(248 250 252)",
-          textShadow: "0 0 30px rgba(245,158,11,0.1)",
+          ...hFont, color: "rgb(248 250 252)", textShadow: "0 0 30px rgba(245,158,11,0.1)",
         }}>Dashboard</h1>
         <p className="mt-3 text-base text-slate-400">
           Hey <span className="font-bold text-amber-300">{name}</span>! Spin the carousel to explore.
