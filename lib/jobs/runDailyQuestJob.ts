@@ -159,8 +159,8 @@ async function processOneUser(
   }
 
   // ── Step 5: Build + send email ──
-  const { subject, text } = buildDailyQuestEmail(quest, user);
-  await sendEmail(user.email, subject, text);
+  const { subject, text } = buildDailyQuestEmail(quest, user.display_name);
+  await sendEmail({ to: user.email, subject, text });
 
   // ── Step 6: Mark as emailed (only after successful send) ──
   await markAssignmentEmailed(assignment.id);
