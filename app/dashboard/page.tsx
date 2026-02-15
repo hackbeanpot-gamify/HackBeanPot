@@ -10,9 +10,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Fredoka, Nunito } from "next/font/google";
 import { useQuests } from "@/lib/hooks/useQuests";
-import { useAssignedQuests } from "@/lib/hooks/useAssignedQuests";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
-import type { LeaderboardEntry } from "@/types";
+import { useDailyQuestPage } from "@/lib/hooks/useDailyQuestPage";
+import type { LeaderboardEntry, RaidBossEvent } from "@/types";
 import ArcadeNavbar from "@/components/ArcadeNavbar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -151,15 +151,20 @@ function MiniConsole({ entries }: { entries: LeaderboardEntry[] }): React.JSX.El
 }
 
 /* ── Boss Quest Card ── */
-function BossQuestCard({ quest }: { quest: DashboardQuest }): React.JSX.Element {
+function BossQuestCard({ quest, onRsvp, isRsvping, isRsvped }: {
+  quest: DashboardQuest;
+  onRsvp: (id: string) => void;
+  isRsvping: boolean;
+  isRsvped: boolean;
+}): React.JSX.Element {
   const xpR = quest.xpReward || quest.xp_reward || 0;
   const diff = quest.difficulty || "hard";
   return (
-    <div className="relative rounded-xl overflow-hidden transition-all duration-300 hover:scale-105"
+    <div className="relative rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02]"
       style={{ backgroundColor: "rgba(34,197,94,0.06)", border: "2px solid rgba(34,197,94,0.3)", boxShadow: "0 3px 18px rgba(34,197,94,0.15)" }}>
       <div className="h-2" style={{ background: "linear-gradient(90deg, #22c55e, #4ade80, #22c55e)", boxShadow: "0 0 15px rgba(34,197,94,0.6)" }} />
       <div className="px-5 py-4">
-        <div className="flex items-start justify-between gap-5">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <span className="text-base font-bold text-slate-200 block truncate">{quest.title}</span>
             <div className="flex items-center gap-3 mt-2">
@@ -171,9 +176,25 @@ function BossQuestCard({ quest }: { quest: DashboardQuest }): React.JSX.Element 
               <span className="text-[11px] font-bold" style={{ color: "rgba(34,197,94,0.7)" }}>RAID EVENT</span>
             </div>
           </div>
-          <div className="flex flex-col items-center shrink-0">
-            <span className="text-2xl font-bold" style={{ color: "#4ade80", ...hFont }}>+{xpR}</span>
-            <span className="text-[10px] font-bold uppercase" style={{ color: "rgba(34,197,94,0.7)" }}>XP</span>
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <div className="text-center">
+              <span className="text-2xl font-bold" style={{ color: "#4ade80", ...hFont }}>+{xpR}</span>
+              <span className="text-[10px] font-bold uppercase block" style={{ color: "rgba(34,197,94,0.7)" }}>XP</span>
+            </div>
+            <button
+              onClick={() => onRsvp(quest.id)}
+              disabled={isRsvping || isRsvped}
+              className="px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{
+                background: isRsvped
+                  ? "linear-gradient(135deg, #64748b 0%, #475569 100%)"
+                  : "linear-gradient(135deg, #22c55e 0%, #4ade80 100%)",
+                color: "#ffffff",
+                border: "2px solid rgba(74,222,128,0.4)",
+                boxShadow: "0 4px 15px rgba(34,197,94,0.3), inset 0 1px 0 rgba(255,255,255,0.2)"
+              }}>
+              {isRsvping ? "..." : isRsvped ? "✓ RSVP'd" : "RSVP"}
+            </button>
           </div>
         </div>
       </div>
@@ -187,17 +208,19 @@ function BossQuestCard({ quest }: { quest: DashboardQuest }): React.JSX.Element 
 export default function DashboardPage(): React.JSX.Element {
   const { data: leaderboard, loading: leaderboardLoading } = useLeaderboard();
   const { quests: allQuests, loading: allQuestsLoading } = useQuests();
-
-  // Use the same user ID as the profile page
-  const userId = "57d33940-2603-474d-b084-285aaf859a0e";
-  const { quests: assignedQuests, loading: assignedQuestsLoading, refetch } = useAssignedQuests(userId);
+  const { dailyQuest, rsvpEvents, loading: questPageLoading, refetch: refetchQuestPage } = useDailyQuestPage();
 
   const [activeIndex, setActiveIndex] = useState(0);
+  // Tracks which boss quest is currently being RSVP'd (by event id)
+  const [rsvpLoading, setRsvpLoading] = useState<string | null>(null);
+  // Set of event IDs the user has RSVP'd to during this session
+  const [rsvpedIds, setRsvpedIds] = useState<Set<string>>(new Set());
 
   const name = "Jackson Zheng";
   const xp = 510;
   const streak = 2;
 
+  /** Mark a daily quest assignment as completed */
   const handleCompleteQuest = async (assignmentId: string) => {
     try {
       const { createClient } = await import("@/lib/supabase/client");
@@ -216,10 +239,31 @@ export default function DashboardPage(): React.JSX.Element {
         return;
       }
 
-      // Refetch quests to update the UI
-      refetch();
+      refetchQuestPage();
     } catch (err) {
       console.error("Error completing quest:", err);
+    }
+  };
+
+  /** RSVP to a raid boss event via the API */
+  const handleRsvp = async (eventId: string) => {
+    setRsvpLoading(eventId);
+    try {
+      const res = await fetch("/api/raidBoss/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to RSVP");
+
+      // Track locally + refresh quest page so RSVP'd events appear
+      setRsvpedIds((prev) => new Set(prev).add(eventId));
+      refetchQuestPage();
+    } catch (err) {
+      console.error("RSVP failed:", err);
+    } finally {
+      setRsvpLoading(null);
     }
   };
 
@@ -305,38 +349,70 @@ export default function DashboardPage(): React.JSX.Element {
 
               {activeIndex === 2 && (
                 <Tent {...TENT_COLORS[2]} title="Quests">
-                  {assignedQuestsLoading ? (
-                    <div className="text-center py-12 text-base text-slate-500">Loading quests...</div>
-                  ) : assignedQuests.length === 0 ? (
-                    <div className="text-center py-12 text-base text-slate-500">No quests assigned today</div>
+                  {questPageLoading ? (
+                    <div className="text-center py-12 text-base text-slate-500">Loading...</div>
                   ) : (
-                    <div className="space-y-3">
-                      {assignedQuests.slice(0, 4).map((item) => (
-                        <div key={item.quest.id} className="rounded-xl transition-all duration-200"
+                    <div className="space-y-4">
+                      {/* Daily quest (single) */}
+                      {dailyQuest ? (
+                        <div className="rounded-xl transition-all duration-200"
                           style={{ backgroundColor: "rgba(59,130,246,0.08)", border: "2px solid rgba(59,130,246,0.2)", boxShadow: "0 3px 10px rgba(59,130,246,0.15)" }}>
                           <div className="flex items-center justify-between py-4 px-5">
-                            <span className="text-base font-medium text-slate-300 truncate max-w-[280px]">{item.quest.title}</span>
+                            <span className="text-base font-medium text-slate-300 truncate max-w-[280px]">{dailyQuest.title}</span>
                             <span className="text-sm font-bold shrink-0 px-4 py-2 rounded-full"
                               style={{ backgroundColor: "rgba(59,130,246,0.15)", color: "#60a5fa", border: "1.5px solid rgba(59,130,246,0.25)" }}>
-                              +{item.quest.xp_reward} XP
+                              +{dailyQuest.xp_reward} XP
                             </span>
                           </div>
                           <div className="px-5 pb-4">
                             <button
-                              onClick={() => handleCompleteQuest(item.assignmentId)}
-                              disabled={item.status === "completed"}
+                              onClick={() => handleCompleteQuest(dailyQuest.assignmentId)}
+                              disabled={dailyQuest.assignmentStatus === "completed"}
                               className="w-full py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                               style={{
-                                background: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)",
+                                background: dailyQuest.assignmentStatus === "completed"
+                                  ? "linear-gradient(135deg, #64748b 0%, #475569 100%)"
+                                  : "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)",
                                 color: "#ffffff",
                                 border: "2px solid rgba(96,165,250,0.4)",
                                 boxShadow: "0 4px 15px rgba(59,130,246,0.3), inset 0 1px 0 rgba(255,255,255,0.2)"
                               }}>
-                              {item.status === "completed" ? "✓ " : ""}Task Completed
+                              {dailyQuest.assignmentStatus === "completed" ? "✓ Completed" : "Mark Complete"}
                             </button>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        <div className="text-center py-8 text-base text-slate-500">No daily quest assigned yet</div>
+                      )}
+
+                      {/* RSVP'd raid boss events */}
+                      {rsvpEvents.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="text-xs uppercase tracking-wider font-bold" style={{ color: "rgba(34,197,94,0.6)" }}>
+                            Your Raid Events
+                          </div>
+                          {rsvpEvents.map((event: RaidBossEvent) => {
+                            const startDate = new Date(event.start_time);
+                            const dateStr = startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                            const timeStr = startDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+                            return (
+                              <div key={event.id} className="rounded-xl overflow-hidden"
+                                style={{ backgroundColor: "rgba(34,197,94,0.06)", border: "2px solid rgba(34,197,94,0.3)", boxShadow: "0 3px 18px rgba(34,197,94,0.15)" }}>
+                                <div className="h-1.5" style={{ background: "linear-gradient(90deg, #22c55e, #4ade80, #22c55e)" }} />
+                                <div className="px-5 py-3 flex items-center justify-between">
+                                  <div className="min-w-0">
+                                    <span className="text-sm font-bold text-slate-200 block truncate">{event.title}</span>
+                                    <span className="text-xs text-slate-400 block mt-1">
+                                      {dateStr} at {timeStr}{event.location_text ? ` · ${event.location_text}` : ""}
+                                    </span>
+                                  </div>
+                                  <span className="text-sm font-bold shrink-0 ml-3" style={{ color: "#4ade80", ...hFont }}>+{event.xp_reward} XP</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
                 </Tent>
@@ -347,9 +423,15 @@ export default function DashboardPage(): React.JSX.Element {
                   {allQuestsLoading || bossQuests.length === 0 ? (
                     <div className="text-center py-12 text-base text-slate-500">No boss quests available</div>
                   ) : (
-                    <div className="space-y-3">
-                      {bossQuests.slice(0, 3).map((q) => (
-                        <BossQuestCard key={q.id} quest={q} />
+                    <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
+                      {bossQuests.map((q) => (
+                        <BossQuestCard
+                          key={q.id}
+                          quest={q}
+                          onRsvp={handleRsvp}
+                          isRsvping={rsvpLoading === q.id}
+                          isRsvped={rsvpedIds.has(q.id) || rsvpEvents.some((e) => e.id === q.id)}
+                        />
                       ))}
                     </div>
                   )}
