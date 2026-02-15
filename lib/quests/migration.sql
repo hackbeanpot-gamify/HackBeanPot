@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS "dailyQuestAssignment" CASCADE;
 -- ── Create dailyQuestAssignment ──
 CREATE TABLE "dailyQuestAssignment" (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID NOT NULL REFERENCES users_profile(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   quest_id UUID NOT NULL REFERENCES "dailyQuest"(id) ON DELETE CASCADE,
   assigned_date DATE NOT NULL,
   status TEXT NOT NULL DEFAULT 'assigned'
