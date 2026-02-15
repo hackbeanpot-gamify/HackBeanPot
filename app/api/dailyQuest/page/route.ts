@@ -13,12 +13,12 @@
 import { NextResponse } from "next/server";
 import { getDailyQuestWithRsvps } from "@/lib/raidBoss/getDailyQuestWithRsvps";
 
-/** Demo-hardcoded email */
-const HARDCODED_EMAIL = "jacksonzheng425@gmail.com";
+/** Demo-hardcoded user ID */
+const HARDCODED_USER_ID = "57d33940-2603-474d-b084-285aaf859a0e";
 
 export async function GET() {
   try {
-    const data = await getDailyQuestWithRsvps(HARDCODED_EMAIL);
+    const data = await getDailyQuestWithRsvps(HARDCODED_USER_ID);
 
     // Surface user-resolution errors as a 404
     if (data.userError) {

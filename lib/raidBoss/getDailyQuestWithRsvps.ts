@@ -9,7 +9,6 @@
  */
 
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
-import { getUserByEmail } from "./getUserByEmail";
 import { getUserRsvps } from "./getUserRsvps";
 import type { DailyQuest, RaidBossEvent } from "@/types";
 
@@ -34,19 +33,14 @@ function getTodayDateString(): string {
 }
 
 /**
- * Fetch everything the Quests tab needs for a given user email.
+ * Fetch everything the Quests tab needs for a given user ID.
  *
- * @param email - User's email (hardcoded to Jackson for demo)
+ * @param userId - User's UUID
  * @returns Daily quest (or null) + RSVP'd raid boss events
  */
 export async function getDailyQuestWithRsvps(
-  email: string
+  userId: string
 ): Promise<DailyQuestPageData> {
-  // Step 1: resolve user
-  const userId = await getUserByEmail(email);
-  if (!userId) {
-    return { dailyQuest: null, rsvpEvents: [], userError: "User not found for email: " + email };
-  }
 
   const supabase = getSupabaseAdminClient();
   const today = getTodayDateString();

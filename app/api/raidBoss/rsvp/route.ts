@@ -11,11 +11,10 @@
  */
 
 import { NextResponse } from "next/server";
-import { getUserByEmail } from "@/lib/raidBoss/getUserByEmail";
 import { createRsvp } from "@/lib/raidBoss/createRsvp";
 
-/** Demo-hardcoded email — all RSVPs are created for this user */
-const HARDCODED_EMAIL = "jacksonzheng425@gmail.com";
+/** Demo-hardcoded user ID — all RSVPs are created for this user */
+const HARDCODED_USER_ID = "57d33940-2603-474d-b084-285aaf859a0e";
 
 export async function POST(request: Request) {
   try {
@@ -27,14 +26,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "eventId is required" }, { status: 400 });
     }
 
-    // Resolve user by hardcoded email
-    const userId = await getUserByEmail(HARDCODED_EMAIL);
-    if (!userId) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Upsert RSVP (idempotent)
-    const success = await createRsvp(eventId, userId, "going");
+    // Upsert RSVP (idempotent) using hardcoded user ID
+    const success = await createRsvp(eventId, HARDCODED_USER_ID, "going");
     if (!success) {
       return NextResponse.json({ error: "Failed to create RSVP" }, { status: 500 });
     }

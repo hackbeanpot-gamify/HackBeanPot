@@ -9,9 +9,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Fredoka, Nunito } from "next/font/google";
-import { useQuests } from "@/lib/hooks/useQuests";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useDailyQuestPage } from "@/lib/hooks/useDailyQuestPage";
+import { useRaidBossEvents } from "@/lib/hooks/useRaidBossEvents";
 import type { LeaderboardEntry, RaidBossEvent } from "@/types";
 import ArcadeNavbar from "@/components/ArcadeNavbar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -207,7 +207,7 @@ function BossQuestCard({ quest, onRsvp, isRsvping, isRsvped }: {
    ═══════════════════════════════════════════ */
 export default function DashboardPage(): React.JSX.Element {
   const { data: leaderboard, loading: leaderboardLoading } = useLeaderboard();
-  const { quests: allQuests, loading: allQuestsLoading } = useQuests();
+  const { events: raidBossEvents, loading: raidBossLoading } = useRaidBossEvents();
   const { dailyQuest, rsvpEvents, loading: questPageLoading, refetch: refetchQuestPage } = useDailyQuestPage();
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -280,7 +280,6 @@ export default function DashboardPage(): React.JSX.Element {
     return () => window.removeEventListener("keydown", onKey);
   }, [goLeft, goRight]);
 
-  const bossQuests = allQuests.filter((q) => !q.is_daily);
 
   return (
     <main className={`${fredoka.variable} ${nunito.variable} min-h-screen`}
@@ -420,17 +419,25 @@ export default function DashboardPage(): React.JSX.Element {
 
               {activeIndex === 3 && (
                 <Tent {...TENT_COLORS[3]} title="Boss Quests">
-                  {allQuestsLoading || bossQuests.length === 0 ? (
+                  {raidBossLoading ? (
+                    <div className="text-center py-12 text-base text-slate-500">Loading...</div>
+                  ) : raidBossEvents.length === 0 ? (
                     <div className="text-center py-12 text-base text-slate-500">No boss quests available</div>
                   ) : (
                     <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
-                      {bossQuests.map((q) => (
+                      {raidBossEvents.map((event) => (
                         <BossQuestCard
-                          key={q.id}
-                          quest={q}
+                          key={event.id}
+                          quest={{
+                            id: event.id,
+                            title: event.title,
+                            description: event.description,
+                            xp_reward: event.xp_reward,
+                            difficulty: "hard"
+                          }}
                           onRsvp={handleRsvp}
-                          isRsvping={rsvpLoading === q.id}
-                          isRsvped={rsvpedIds.has(q.id) || rsvpEvents.some((e) => e.id === q.id)}
+                          isRsvping={rsvpLoading === event.id}
+                          isRsvped={rsvpedIds.has(event.id) || rsvpEvents.some((e) => e.id === event.id)}
                         />
                       ))}
                     </div>
