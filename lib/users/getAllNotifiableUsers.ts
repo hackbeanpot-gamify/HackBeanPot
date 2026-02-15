@@ -26,7 +26,7 @@ import type { NotifiableUser } from "@/lib/quests/types";
  */
 export async function getAllNotifiableUsers(): Promise<NotifiableUser[]> {
   const { data, error } = await supabaseAdmin
-    .from("users_profile")
+    .from("profiles")
     .select("id, email, display_name")
     .not("email", "is", null)
     .neq("email", "");

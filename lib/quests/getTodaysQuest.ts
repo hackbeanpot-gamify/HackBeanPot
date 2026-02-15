@@ -8,7 +8,7 @@
  * TABLES USED:
  *   public.dailyQuest            — quest catalog (snake_case columns)
  *   public.dailyQuestAssignment  — per-user daily assignments
- *   public.users_profile         — user data
+ *   public.profiles               — user data
  *
  * This file uses the per-request Supabase client (RLS-aware).
  * For the cron job, see lib/jobs/runDailyQuestJob.ts instead.
@@ -200,7 +200,7 @@ export async function getQuestUser(
 ): Promise<NotifiableUser | null> {
   const supabase = await createClient();
   const { data } = await supabase
-    .from("users_profile")
+    .from("profiles")
     .select("id, email, display_name")
     .eq("id", userId)
     .limit(1)

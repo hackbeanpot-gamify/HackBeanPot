@@ -1,51 +1,57 @@
 /**
  * lib/email/sendEmail.ts
  *
- * Sends a single email via the Resend API.
+ * Sends a single email via Resend.
  *
  * WHY THIS EXISTS:
- * This is the ONLY file that knows about Resend. If we switch providers,
- * only this file changes. Every other file calls sendEmail().
+ * This is the ONLY file that calls the Resend API. All other files
+ * build email content and pass it here. If we switch providers,
+ * only this file changes.
  *
  * ENV VARS:
- *   RESEND_API_KEY    — Resend API key
- *   RESEND_FROM_EMAIL — verified sender (e.g., noreply@yourdomain.com)
+ *   RESEND_API_KEY    — set in resendClient.ts
+ *   RESEND_FROM_EMAIL — verified sender address
  *
  * ERROR HANDLING:
- * Throws on failure. Caller (orchestrator) catches and logs.
+ * Throws on failure. Caller is responsible for catching.
  */
 
-import { Resend } from "resend";
+import { getResendClient } from "@/lib/email/resendClient";
+
+/** Input shape for sendEmail. */
+export interface SendEmailInput {
+  /** Recipient email address */
+  to: string;
+  /** Email subject line */
+  subject: string;
+  /** Plain-text body */
+  text: string;
+  /** Optional HTML body */
+  html?: string;
+}
 
 /**
- * Send a plain-text email to one recipient.
+ * Send an email to one recipient via Resend.
  *
- * @param to      - Recipient email address.
- * @param subject - Email subject line.
- * @param text    - Plain-text body.
- * @throws Error if API key is missing or Resend returns an error.
+ * @param input - { to, subject, text, html? }
+ * @throws Error if Resend returns an error.
+ *
+ * @example
+ *   await sendEmail({ to: "user@example.com", subject: "Hi", text: "Hello!" });
  */
-export async function sendEmail(
-  to: string,
-  subject: string,
-  text: string
-): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error("[sendEmail] Missing RESEND_API_KEY env var.");
-  }
-
+export async function sendEmail(input: SendEmailInput): Promise<void> {
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-  const resend = new Resend(apiKey);
+  const resend = getResendClient();
 
   const { error } = await resend.emails.send({
     from: `Impact Trail <${fromEmail}>`,
-    to: [to],
-    subject,
-    text,
+    to: [input.to],
+    subject: input.subject,
+    text: input.text,
+    ...(input.html ? { html: input.html } : {}),
   });
 
   if (error) {
-    throw new Error(`[sendEmail] Resend error for ${to}: ${error.message}`);
+    throw new Error(`[sendEmail] Resend error for ${input.to}: ${error.message}`);
   }
 }

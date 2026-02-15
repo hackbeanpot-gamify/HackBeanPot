@@ -6,7 +6,7 @@
  * These types mirror the actual Supabase Postgres tables:
  *   - public.dailyQuest            (quest catalog)
  *   - public.dailyQuestAssignment  (per-user daily assignments)
- *   - public.users_profile         (user data)
+ *   - public.profiles              (user data)
  */
 
 // ── Quest Catalog (public.dailyQuest) ──
@@ -54,7 +54,7 @@ export interface Assignment {
   dailyQuest?: Quest;
 }
 
-// ── User Profile (public.users_profile) ──
+// ── User Profile (public.profiles) ──
 
 export interface UserProfile {
   id: string;               // uuid (matches auth.users.id)
