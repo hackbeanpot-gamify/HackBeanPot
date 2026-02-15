@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Fredoka, Nunito } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
+import ArcadeNavbar from "@/components/ArcadeNavbar";
 
 const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", weight: ["400", "500", "600", "700"] });
 const nunito = Nunito({ subsets: ["latin"], variable: "--font-nunito", weight: ["400", "500", "600", "700", "800"] });
@@ -102,8 +103,10 @@ export default function ProfilePage() {
   const pct = Math.min(Math.max((inLvl / needed) * 100, 0), 100);
 
   return (
-    <div className={`${fredoka.variable} ${nunito.variable} min-h-screen flex flex-col items-center justify-center px-4 py-12`}
+    <div className={`${fredoka.variable} ${nunito.variable} min-h-screen flex flex-col items-center justify-center px-4 py-20`}
       style={{ fontFamily: "var(--font-nunito)", background: "linear-gradient(180deg, #080E1A 0%, #0B1120 40%, #0E1528 100%)" }}>
+
+      <ArcadeNavbar />
 
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse at center, rgba(245,158,11,0.06) 0%, transparent 70%)" }} />

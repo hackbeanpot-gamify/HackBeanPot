@@ -1,45 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Fredoka, Nunito } from "next/font/google";
 import NextLink from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { useQuests } from "@/lib/hooks/useQuests";
+import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
+import { LeaderboardEntry, DailyQuest } from "@/types";
+import ArcadeNavbar from "@/components/ArcadeNavbar";
 
 const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", weight: ["400", "500", "600", "700"] });
 const nunito = Nunito({ subsets: ["latin"], variable: "--font-nunito", weight: ["400", "500", "600", "700", "800"] });
 const hFont = { fontFamily: "var(--font-fredoka)" } as const;
-
-interface Profile {
-  id: string; email?: string | null; display_name?: string | null;
-  displayName?: string | null; username?: string | null;
-  xp?: number | null; level?: number | null;
-  currentStreak?: number | null; current_streak?: number | null;
-}
-interface LeaderboardEntry {
-  id: string; username?: string | null; display_name?: string | null;
-  displayName?: string | null; xp?: number | null; level?: number | null;
-  currentStreak?: number | null; current_streak?: number | null;
-}
-interface Quest {
-  id: number; title: string; xpReward?: number | null; xp_reward?: number | null;
-  difficulty?: string | null;
-}
-
-function useProfile(id: string) {
-  const [p, setP] = useState<Profile | null>(null);
-  useEffect(() => { (async () => { const sb = createClient(); const { data } = await sb.from("profiles").select("*").eq("id", id).single(); if (data) setP(data); })(); }, [id]);
-  return p;
-}
-function useLeaderboard(n = 5) {
-  const [e, setE] = useState<LeaderboardEntry[]>([]);
-  useEffect(() => { (async () => { const sb = createClient(); const { data } = await sb.from("cityLeaderboard").select("*").limit(n); if (data) setE(data); })(); }, [n]);
-  return e;
-}
-function useQuests(n = 5) {
-  const [q, setQ] = useState<Quest[]>([]);
-  useEffect(() => { (async () => { const sb = createClient(); const { data } = await sb.from("quests").select("*").limit(n); if (data) setQ(data); })(); }, [n]);
-  return q;
-}
 
 /* ═══════════════════════════════════════════
    TENT COMPONENT — Redesigned
@@ -199,14 +169,14 @@ function MiniConsole({ entries }: { entries: LeaderboardEntry[] }) {
         ) : (
           <div className="space-y-1.5">
             {entries.slice(0, 5).map((e, i) => {
-              const name = e.display_name || e.displayName || e.username || "User";
+              const name = e.display_name || "User";
               return (
-                <div key={e.id} className="flex items-center justify-between">
+                <div key={e.user_id} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] w-4">{i < 3 ? medals[i] : <span style={{ color: "#475569" }}>{i + 1}</span>}</span>
                     <span className="text-[11px] text-slate-300 truncate max-w-[90px]">{name}</span>
                   </div>
-                  <span className="text-[9px] font-bold" style={{ color: "#f59e0b" }}>{(e.xp || 0).toLocaleString()}</span>
+                  <span className="text-[9px] font-bold" style={{ color: "#f59e0b" }}>{e.xp_total.toLocaleString()}</span>
                 </div>
               );
             })}
@@ -221,23 +191,25 @@ function MiniConsole({ entries }: { entries: LeaderboardEntry[] }) {
    DASHBOARD
    ═══════════════════════════════════════════ */
 export default function DashboardPage() {
-  const profile = useProfile("21972c6e-f716-46ed-81b6-e37ff8adcdae");
-  const leaderboard = useLeaderboard(5);
-  const quests = useQuests(5);
+  const { data: leaderboard, loading: leaderboardLoading } = useLeaderboard();
+  const { quests, loading: questsLoading } = useQuests();
 
-  const name = profile?.display_name || profile?.displayName || profile?.username || profile?.email || "Quester";
-  const xp = profile?.xp || 0;
-  const streak = profile?.currentStreak || profile?.current_streak || 0;
+  // For now using placeholder profile data - will connect to auth later
+  const name = "Quester";
+  const xp = 0;
+  const streak = 0;
 
   return (
     <main className={`${fredoka.variable} ${nunito.variable} min-h-screen`}
       style={{ fontFamily: "var(--font-nunito)", background: "linear-gradient(180deg, #080E1A 0%, #0B1120 40%, #0E1528 100%)" }}>
 
+      <ArcadeNavbar />
+
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[700px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse at center, rgba(245,158,11,0.05) 0%, transparent 70%)" }} />
 
       {/* Header */}
-      <div className="relative text-center pt-24 pb-6 px-4">
+      <div className="relative text-center pt-32 pb-6 px-4">
         <p className="text-[11px] font-bold tracking-[0.3em] uppercase mb-3" style={{ color: "rgba(245,158,11,0.35)", ...hFont }}>
           🎪 Welcome to the Carnival 🎪
         </p>
@@ -285,7 +257,11 @@ export default function DashboardPage() {
             glowColor="rgba(246,196,83,0.15)"
             title="Leaderboard" href="/leaderboard"
           >
-            <MiniConsole entries={leaderboard} />
+            {leaderboardLoading ? (
+              <div className="text-center py-6 text-sm text-slate-500">Loading...</div>
+            ) : (
+              <MiniConsole entries={leaderboard} />
+            )}
           </Tent>
 
           {/* 🔵 Blue Tent: Quests */}
@@ -294,23 +270,20 @@ export default function DashboardPage() {
             glowColor="rgba(59,130,246,0.15)"
             title="Quests" href="/quests"
           >
-            {quests.length === 0 ? (
+            {questsLoading || quests.length === 0 ? (
               <div className="text-center py-6 text-sm text-slate-500">Loading quests...</div>
             ) : (
               <div className="space-y-2">
-                {quests.slice(0, 4).map((q) => {
-                  const xpR = q.xpReward || q.xp_reward || 0;
-                  return (
-                    <div key={q.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg transition-colors"
-                      style={{ backgroundColor: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.1)" }}>
-                      <span className="text-[12px] text-slate-300 truncate max-w-[150px]">{q.title}</span>
-                      <span className="text-[10px] font-bold flex-shrink-0 px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: "rgba(59,130,246,0.12)", color: "#60a5fa" }}>
-                        +{xpR} XP
-                      </span>
-                    </div>
-                  );
-                })}
+                {quests.slice(0, 4).map((q) => (
+                  <div key={q.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg transition-colors"
+                    style={{ backgroundColor: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.1)" }}>
+                    <span className="text-[12px] text-slate-300 truncate max-w-[150px]">{q.title}</span>
+                    <span className="text-[10px] font-bold flex-shrink-0 px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: "rgba(59,130,246,0.12)", color: "#60a5fa" }}>
+                      +{q.xp_reward} XP
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </Tent>
