@@ -292,7 +292,7 @@ export default function ProfilePage() {
             <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.5)" }} />
             <span className="text-[9px] uppercase tracking-[0.15em] font-semibold" style={{ color: "rgba(255,255,255,0.2)" }}>Power</span>
           </div>
-          <span className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: "rgba(245,158,11,0.4)", ...hFont }}>_Quest</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: "rgba(245,158,11,0.4)", ...hFont }}>Impact Trail</span>
           <div className="flex gap-[3px]">{[...Array(5)].map((_, i) => (
             <div key={i} style={{ width: 2, height: 14, borderRadius: "1px", backgroundColor: "rgba(255,255,255,0.06)" }} />
           ))}</div>
