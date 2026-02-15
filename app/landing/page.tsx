@@ -175,7 +175,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% -10%, rgba(245,158,11,0.07) 0%, transparent 55%)" }} />
         <ScrollReveal><HeroBadge><PartyPopper className="w-3.5 h-3.5 mr-1.5" /> Now in beta</HeroBadge></ScrollReveal>
         <ScrollReveal delay={0.1}><p className="text-[11px] font-bold tracking-[0.35em] uppercase text-amber-400/40 mb-3" style={hFont}>🎪 All Aboard! 🎪</p></ScrollReveal>
-        <ScrollReveal delay={0.15}><h1 className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-none text-slate-50" style={hFont}>Impact Quest</h1></ScrollReveal>
+        <ScrollReveal delay={0.15}><h1 className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-none text-slate-50" style={hFont}>Impact Trail</h1></ScrollReveal>
         <ScrollReveal delay={0.25}><p className="mt-6 max-w-lg mx-auto text-base sm:text-lg text-slate-400 leading-relaxed">We turn community issues into <span className="font-semibold text-amber-300">daily quests</span> and volunteering into a <span className="font-semibold text-red-400">multiplayer game</span>.</p></ScrollReveal>
         <ScrollReveal delay={0.35}>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
