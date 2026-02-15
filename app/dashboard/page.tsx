@@ -80,12 +80,12 @@ function ArcadeArrow({ direction, onClick, color }: { direction: "left" | "right
 /* ── Tent ── */
 function Tent({ color, lightColor, darkColor, glowColor, title, children }: TentProps): React.JSX.Element {
   return (
-    <div className="flex flex-col items-center w-full max-w-[510px] mx-auto" style={{ filter: `drop-shadow(0 10px 40px ${glowColor})` }}>
-      <div className="relative z-10 -mb-8">
-        <div style={{ width: 6, height: 60, backgroundColor: darkColor, margin: "0 auto" }} />
-        <div style={{ width: 36, height: 27, backgroundColor: color, clipPath: "polygon(0 0, 100% 30%, 0 100%)", position: "absolute", top: 2, left: 8, filter: `drop-shadow(0 4px 10px ${glowColor})` }} />
+    <div className="flex flex-col items-center w-full max-w-[680px] mx-auto" style={{ filter: `drop-shadow(0 10px 40px ${glowColor})` }}>
+      <div className="relative z-10 -mb-10">
+        <div style={{ width: 8, height: 80, backgroundColor: darkColor, margin: "0 auto" }} />
+        <div style={{ width: 48, height: 36, backgroundColor: color, clipPath: "polygon(0 0, 100% 30%, 0 100%)", position: "absolute", top: 2, left: 10, filter: `drop-shadow(0 4px 10px ${glowColor})` }} />
       </div>
-      <div className="w-full relative" style={{ height: 162 }}>
+      <div className="w-full relative" style={{ height: 216 }}>
         <div className="absolute inset-0" style={{ clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)", background: `linear-gradient(135deg, ${lightColor} 0%, ${color} 40%, ${darkColor} 100%)` }} />
         <div className="absolute inset-0" style={{ clipPath: "polygon(50% 0%, 58% 100%, 42% 100%)", backgroundColor: darkColor, opacity: 0.5 }} />
         <div className="absolute inset-0" style={{ clipPath: "polygon(50% 0%, 30% 100%, 18% 100%)", backgroundColor: darkColor, opacity: 0.3 }} />
@@ -247,20 +247,36 @@ export default function DashboardPage(): React.JSX.Element {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[700px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse at center, rgba(245,158,11,0.05) 0%, transparent 70%)" }} />
 
-      <div className="relative text-center pt-20 pb-2 px-4">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold" style={{ ...hFont, color: "rgb(248 250 252)", textShadow: "0 0 40px rgba(245,158,11,0.15)" }}>
-          Dashboard
-        </h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Hey <span className="font-bold text-amber-300">{name}</span>! Spin the carousel to explore.
+      {/* Blue accent glows */}
+      <div className="fixed top-1/3 left-1/4 w-[400px] h-[400px] pointer-events-none opacity-40"
+        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)", filter: "blur(40px)" }} />
+      <div className="fixed top-1/2 right-1/4 w-[350px] h-[350px] pointer-events-none opacity-40"
+        style={{ background: "radial-gradient(circle, rgba(96,165,250,0.06) 0%, transparent 70%)", filter: "blur(40px)" }} />
+
+      <div className="relative text-center pt-16 pb-8 px-4">
+        <p className="text-xl md:text-2xl font-medium mb-2" style={{
+          ...hFont,
+          color: "#f1f5f9",
+          textShadow: "0 2px 10px rgba(0,0,0,0.4)"
+        }}>
+          Hey <span className="font-bold" style={{
+            color: "#fbbf24",
+            textShadow: "0 0 20px rgba(251,191,36,0.4)"
+          }}>{name}</span>!
+        </p>
+        <p className="text-sm md:text-base" style={{
+          color: "#94a3b8",
+          letterSpacing: "0.02em"
+        }}>
+          Spin the carousel to explore
         </p>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-1">
+      <div className="relative max-w-7xl mx-auto px-6 pb-24">
         <div className="flex items-center justify-center gap-6 md:gap-8">
           <ArcadeArrow direction="left" onClick={goLeft} color={currentColors.color} />
 
-          <div className="relative w-full max-w-[510px] overflow-hidden" style={{ minHeight: 425 }}>
+          <div className="relative w-full max-w-[680px] overflow-hidden" style={{ minHeight: 520 }}>
             <div className="transition-all duration-500 ease-in-out" key={activeIndex} style={{ animation: "tentFadeIn 0.4s ease-out" }}>
 
               {activeIndex === 0 && (
