@@ -15,15 +15,19 @@ import ConfettiDots from "@/components/about/ConfettiDots";
 import CarnivalBanner from "@/components/about/CarnivalBanner";
 import HeroBadge from "@/components/about/HeroBadge";
 import ScrollReveal from "@/components/about/ScrollReveal";
-import { createClient } from "@/lib/supabase/client";
+
 
 const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", weight: ["400", "500", "600", "700"] });
 const nunito = Nunito({ subsets: ["latin"], variable: "--font-nunito", weight: ["400", "500", "600", "700", "800"] });
 const hFont = { fontFamily: "var(--font-fredoka)" } as const;
 
 interface LeaderboardEntry {
-  rank: number; id: number; username: string; displayName: string | null;
-  avatarUrl: string | null; city: string | null; xp: number; level: number; currentStreak: number;
+  user_id: string;
+  display_name: string;
+  xp_total: number;
+  level: number;
+  streak_current: number;
+  quests_completed_total: number;
 }
 
 function useLeaderboard(limit = 5) {
@@ -32,9 +36,11 @@ function useLeaderboard(limit = 5) {
   useEffect(() => {
     (async () => {
       try {
-        const sb = createClient();
-        const { data } = await sb.from("cityLeaderboard").select("*").limit(limit);
-        if (data) setEntries(data);
+        const res = await fetch("/api/leaderboard");
+        if (res.ok) {
+          const data: LeaderboardEntry[] = await res.json();
+          setEntries(data.slice(0, limit));
+        }
       } catch {}
       setLoading(false);
     })();
@@ -95,7 +101,7 @@ function LeaderboardConsole({ entries, loading }: { entries: LeaderboardEntry[];
         <div className="flex-1 relative" style={{
           background: "linear-gradient(180deg, #0a0f1e, #0d1325)", borderRadius: "10px",
           border: "3px solid rgba(255,255,255,0.05)", padding: "18px 22px",
-          boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)", minHeight: "220px",
+          boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)", maxHeight: "400px",
         }}>
           <div className="absolute inset-0 pointer-events-none rounded-[7px]" style={{
             background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)"
@@ -107,9 +113,12 @@ function LeaderboardConsole({ entries, loading }: { entries: LeaderboardEntry[];
             ) : entries.length === 0 ? (
               <div className="text-center py-6 text-xs text-slate-500">No data yet</div>
             ) : (
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 max-h-[320px] overflow-y-auto pr-2" style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "rgba(245,158,11,0.3) rgba(255,255,255,0.05)"
+              }}>
                 {entries.map((e, i) => (
-                  <div key={e.id} className="flex items-center justify-between py-2 px-3 rounded-lg" style={{
+                  <div key={e.user_id} className="flex items-center justify-between py-2 px-3 rounded-lg" style={{
                     backgroundColor: i === 0 ? "rgba(245,158,11,0.08)" : "rgba(255,255,255,0.015)",
                     border: i === 0 ? "1px solid rgba(245,158,11,0.2)" : "1px solid transparent",
                   }}>
@@ -118,14 +127,14 @@ function LeaderboardConsole({ entries, loading }: { entries: LeaderboardEntry[];
                       <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center text-[10px] font-bold" style={{
                         backgroundColor: "rgba(245,158,11,0.12)", border: `1.5px solid ${colors[i]||"rgba(148,163,184,0.2)"}`, color: colors[i]||"#94a3b8"
                       }}>
-                        {e.avatarUrl ? <img src={e.avatarUrl} alt="" className="w-full h-full object-cover"/> : (e.displayName||e.username).charAt(0).toUpperCase()}
+                        {e.display_name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-slate-200 block">{e.displayName||e.username}</span>
-                        <span className="text-[9px] text-slate-500">LVL {e.level} · 🔥 {e.currentStreak}</span>
+                        <span className="text-xs font-bold text-slate-200 block">{e.display_name}</span>
+                        <span className="text-[9px] text-slate-500">LVL {e.level} · 🔥 {e.streak_current}</span>
                       </div>
                     </div>
-                    <span className="text-xs font-bold" style={{ color: "#f59e0b" }}>{e.xp.toLocaleString()} XP</span>
+                    <span className="text-xs font-bold" style={{ color: "#f59e0b" }}>{e.xp_total.toLocaleString()} XP</span>
                   </div>
                 ))}
               </div>
@@ -144,7 +153,7 @@ function LeaderboardConsole({ entries, loading }: { entries: LeaderboardEntry[];
           <div style={{ width:5,height:5,borderRadius:"50%",backgroundColor:"#22c55e",boxShadow:"0 0 6px rgba(34,197,94,0.5)" }}/>
           <span className="text-[8px] uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.15)" }}>Online</span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color:"rgba(245,158,11,0.3)",...hFont }}>_Quest</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color:"rgba(245,158,11,0.3)",...hFont }}>Impact Trail</span>
         <div className="flex gap-[2px]">{[...Array(5)].map((_,i)=>(<div key={i} style={{ width:2,height:12,borderRadius:"1px",backgroundColor:"rgba(255,255,255,0.05)" }}/>))}</div>
       </div>
     </div>
@@ -155,7 +164,7 @@ function LeaderboardConsole({ entries, loading }: { entries: LeaderboardEntry[];
    PAGE
    ═══════════════════════════════════════════ */
 export default function LandingPage() {
-  const { entries, loading } = useLeaderboard(5);
+  const { entries, loading } = useLeaderboard(10);
 
   return (
     <main className={`${fredoka.variable} ${nunito.variable} min-h-screen overflow-x-hidden`} style={{ fontFamily: "var(--font-nunito)", backgroundColor: "#0B1120" }}>

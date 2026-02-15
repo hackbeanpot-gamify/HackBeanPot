@@ -22,10 +22,14 @@ export async function GET() {
 
   // Fetch display names for all users in the leaderboard
   const userIds = stats.map((s) => s.user_id);
-  const { data: profiles } = await supabase
-    .from("users_profile")
+  const { data: profiles, error: profileError } = await supabase
+    .from("profiles")
     .select("id, display_name")
     .in("id", userIds);
+
+  console.log("User IDs from stats:", userIds);
+  console.log("Profiles fetched:", profiles);
+  console.log("Profile error:", profileError);
 
   const profileMap = new Map(
     (profiles || []).map((p) => [p.id, p.display_name])
