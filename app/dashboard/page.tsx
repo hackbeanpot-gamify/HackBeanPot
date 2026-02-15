@@ -176,7 +176,7 @@ function MiniConsole({ entries }: { entries: LeaderboardEntry[] }) {
     <div className="rounded-xl overflow-hidden" style={{
       background: "linear-gradient(145deg, #1a1a2e, #121228)",
       border: "2px solid rgba(246,196,83,0.25)",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.4), 0 0 15px rgba(246,196,83,0.05)",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
     }}>
       <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: "1px solid rgba(246,196,83,0.1)" }}>
         <div className="flex gap-2">
